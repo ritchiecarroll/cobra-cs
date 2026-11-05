@@ -10,17 +10,6 @@
 // importing type aliases at a namespace level.
 
 // <ImportedTypeAliases>
-global using cobraꓸCompletion = go.@string;
-global using cobraꓸCompletionFunc = System.Func<go.ж<go.github.com.spf13.cobra_package.Command>, go.slice<go.@string>, go.@string, (go.slice<go.@string>, go.github.com.spf13.cobra_package.ShellCompDirective)>;
-global using osꓸDirEntry = go.io.fs_package.DirEntry;
-global using osꓸFileInfo = go.io.fs_package.FileInfo;
-global using osꓸFileMode = go.io.fs_package.FileMode;
-global using osꓸPathError = go.io.fs_package.PathError;
-global using osꓸSignal = go.os_package.ΔSignal;
-global using pflagꓸParseErrorsWhitelist = go.github.com.spf13.pflag_package.ParseErrorsAllowlist;
-global using timeꓸLocation = go.time_package.ΔLocation;
-global using timeꓸMonth = go.time_package.ΔMonth;
-global using timeꓸWeekday = go.time_package.ΔWeekday;
 // </ImportedTypeAliases>
 
 using go;
@@ -55,6 +44,12 @@ using static go.github.com.spf13.cobra.doc_package;
 // <ImplicitConversions>
 // </ImplicitConversions>
 
+// The struct types whose fields this package reaches through a pointer, as Go spells it, `p.f`:
+// go2cs-gen emits a field property on the pointer for each of their fields.
+[assembly: GoFieldAccess(typeof(GenManHeader))]
+[assembly: GoFieldAccess(typeof(go.github.com.spf13.cobra_package.Command))]
+[assembly: GoFieldAccess(typeof(go.github.com.spf13.pflag_package.Flag))]
+
 // Go source positions are recorded here, one `GoPositionMap` attribute per converted
 // source file in this compilation, so that `runtime.Caller` and the tracebacks built on it
 // can name the GO file and line a frame was converted from rather than the emitted C# one.
@@ -63,11 +58,11 @@ using static go.github.com.spf13.cobra.doc_package;
 // or has none - golib, the BCL and hand-written conversions - and reports its own C# position.
 
 // <GoSourcePositionMaps>
-[assembly: global::go.GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/man_docs.go", "man_docs.cs", "ACJMggAGEsKCgpSCgpSAgraCgqaCgpSCgoKClKSSABQ0soKUgIK2goKmgoKUgpSCkoCCgoKUpJSCgpSmooKCpsaCgoKCpqKCgpSCgpSUgpSElJSClIK4goKCgoKUgoKCgriygpaUlIKCgoKUgoKCgoKCgoKCgriCgoKClIKUlIKU", "160-184:1;225-229:1")]
-[assembly: global::go.GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/md_docs.go", "md_docs.cs", "ACFAooKCgoKCpoKCgoKClKiCqKKClIKUgoKCgqaCpoKCpoCCpIKCgoKCgoKCgoLKgpSCgpSCgoKUlIKUggACEoKCgqrCgoKUgILIgoKCgpSkgIKkgIKk", "53-53:1;91-95:1;126-126:1;127-127:2")]
-[assembly: global::go.GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/rest_docs.go", "rest_docs.cs", "AB88ooKCgoKCgqaCgoKCgoKUqIKogqiigpSClIKCgpSUgoKCgoKClIKmgoKCpoCCpIKCgoKCgoKCgoLKgpSCgpSCgpSUgpSCAAISgoKqwoKClICCyIKCgoKUpICCpICCpNiCgoKCgoKClIKU", "105-109:1;139-139:1")]
-[assembly: global::go.GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/util.go", "util.cs", "ABY0ooKUgoKUlKqCgpTKgKKAooA=")]
-[assembly: global::go.GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/yaml_docs.go", "yaml_docs.cs", "ADFqgoKCqMKCgpSAgsiCgoKClKSAgqSAgqTYgqiigpSSlIKUgqaCpoKClIKCpoKCgoKUgoKCgpSUpoKCgqaAgqSmopSIgtyUyrg=", "54-54:1;55-55:2;89-89:1;152-172:1", "", "169=forceMultiLine/1/1/4;177=forceMultiLine/1/2/2,forceMultiLine/2/2/3")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/man_docs.go", "man_docs.cs", "ACJMggAGEsKCgpSCgpSAgraCgqaCgpSCgoKClKSCABQ0soKUgIK2goKmgoKUgpSCgoCCgoKUpJSCgpSmooKCpsaCgoKCpqKCgpSCgpSUgpSElJSClIK4goKCgoKUgoKCgriygpaUlIKCgoKUgoKCgoKCgoKCgriCgoKClIKUlIKU", "160-184:1;225-229:1", "", "", "78:21")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/md_docs.go", "md_docs.cs", "ACFAooKCgoKCpoKCgoKClKiCqKKClIKUgoKCgqaCpoKCpoCCpIKCgoKCgoKCgoLKgpSCgpSCgoKUlIKUggACEoKCgqrCgoKUgILIgoKCgpSkgIKkgIKk", "53-53:1;91-95:1;126-126:1;127-127:2", "", "", "154:21")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/rest_docs.go", "rest_docs.cs", "AB88ooKCgoKCgqaCgoKCgoKUqIKogqiigpSClIKCgpSUgoKCgoKClIKmgoKCpoCCpIKCgoKCgoKCgoLKgpSCgpSCgpSUgpSCAAISgoKqwoKClICCyIKCgoKUpICCpICCpNiCgoKCgoKClIKU", "105-109:1;139-139:1", "", "", "165:21")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/util.go", "util.cs", "ABY0ooKUgoKUlKqCgpTKgKKAooA=")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/doc/yaml_docs.go", "yaml_docs.cs", "ADFqgoKCqMKCgpSAgsiCgoKClKSAgqSAgqTYgqiigpSClIKUgqaCpoKClIKCpoKCgoKUgoKCgpSUpoKCgqaAgqSmopSIgtyUyrg=", "54-54:1;55-55:2;89-89:1;152-172:1", "", "168=forceMultiLine/1/1/4;176=forceMultiLine/1/2/2,forceMultiLine/2/2/3", "79:21")]
 // </GoSourcePositionMaps>
 
 namespace go.github.com.spf13.cobra;

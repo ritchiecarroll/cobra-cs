@@ -39,7 +39,7 @@ public static void MarkFlagsRequiredTogether(this ж<Command> Ꮡc, params ꓸ�
             throw panic(fmt.Sprintf("Failed to find flag %q and mark it as being required in a flag group"u8, v));
         }
         {
-            var err = c.Flags().SetAnnotation(v, requiredAsGroupAnnotation, append((~f).Annotations[requiredAsGroupAnnotation], strings.Join(flagNames, " "))); if (err != default!) {
+            var err = c.Flags().SetAnnotation(v, requiredAsGroupAnnotation, append(f.Annotations[requiredAsGroupAnnotation], strings.Join(flagNames, " "))); if (err != nil) {
                 throw panic(err);
             }
         }
@@ -57,7 +57,7 @@ public static void MarkFlagsOneRequired(this ж<Command> Ꮡc, params ꓸꓸꓸs
             throw panic(fmt.Sprintf("Failed to find flag %q and mark it as being in a one-required flag group"u8, v));
         }
         {
-            var err = c.Flags().SetAnnotation(v, oneRequiredAnnotation, append((~f).Annotations[oneRequiredAnnotation], strings.Join(flagNames, " "))); if (err != default!) {
+            var err = c.Flags().SetAnnotation(v, oneRequiredAnnotation, append(f.Annotations[oneRequiredAnnotation], strings.Join(flagNames, " "))); if (err != nil) {
                 throw panic(err);
             }
         }
@@ -75,7 +75,7 @@ public static void MarkFlagsMutuallyExclusive(this ж<Command> Ꮡc, params ꓸ�
             throw panic(fmt.Sprintf("Failed to find flag %q and mark it as being in a mutually exclusive flag group"u8, v));
         }
         {
-            var err = c.Flags().SetAnnotation(v, mutuallyExclusiveAnnotation, append((~f).Annotations[mutuallyExclusiveAnnotation], strings.Join(flagNames, " "))); if (err != default!) {
+            var err = c.Flags().SetAnnotation(v, mutuallyExclusiveAnnotation, append(f.Annotations[mutuallyExclusiveAnnotation], strings.Join(flagNames, " "))); if (err != nil) {
                 throw panic(err);
             }
         }
@@ -84,7 +84,7 @@ public static void MarkFlagsMutuallyExclusive(this ж<Command> Ꮡc, params ꓸ�
 
 public static error ValidateFlagGroups(this ref Command c) {
     if (c.DisableFlagParsing) {
-        return default!;
+        return default;
     }
 
     var flags = c.Flags();
@@ -103,28 +103,28 @@ public static error ValidateFlagGroups(this ref Command c) {
     });
 
     {
-        var err = validateRequiredFlagGroups(groupStatus); if (err != default!) {
+        var err = validateRequiredFlagGroups(groupStatus); if (err != nil) {
             return err;
         }
     }
     {
-        var err = validateOneRequiredFlagGroups(oneRequiredGroupStatus); if (err != default!) {
+        var err = validateOneRequiredFlagGroups(oneRequiredGroupStatus); if (err != nil) {
             return err;
         }
     }
     {
-        var err = validateExclusiveFlagGroups(mutuallyExclusiveGroupStatus); if (err != default!) {
+        var err = validateExclusiveFlagGroups(mutuallyExclusiveGroupStatus); if (err != nil) {
             return err;
         }
     }
-    return default!;
+    return default;
 }
 
-internal static bool hasAllFlags(ж<flag.FlagSet> Ꮡfs, params ꓸꓸꓸstring flagnamesʗp) {
+internal static bool hasAllFlags(ж<flag.FlagSet> fs, params ꓸꓸꓸstring flagnamesʗp) {
     var flagnames = flagnamesʗp.sslice();
 
     foreach (var (_, fname) in flagnames) {
-        var f = Ꮡfs.Lookup(fname);
+        var f = fs.Lookup(fname);
         if (f == nil) {
             return false;
         }
@@ -132,14 +132,14 @@ internal static bool hasAllFlags(ж<flag.FlagSet> Ꮡfs, params ꓸꓸꓸstring 
     return true;
 }
 
-internal static void processFlagForGroupAnnotation(ж<flag.FlagSet> Ꮡflags, ref flag.Flag pflag, @string annotation, map<@string, map<@string, bool>> groupStatus) {
+internal static void processFlagForGroupAnnotation(ж<flag.FlagSet> flags, ref flag.Flag pflag, @string annotation, map<@string, map<@string, bool>> groupStatus) {
     var (groupInfo, found) = pflag.Annotations[annotation, ꟷ];
     if (found) {
         foreach (var (_, group) in groupInfo) {
-            if (groupStatus[group] == default!) {
+            if (groupStatus[group] == nil) {
                 var flagnames = strings.Split(group, " ");
 
-                if (!hasAllFlags(Ꮡflags, flagnames.ꓸꓸꓸ)) {
+                if (!hasAllFlags(flags, flagnames.ꓸꓸꓸ)) {
                     continue;
                 }
 
@@ -159,7 +159,7 @@ internal static error validateRequiredFlagGroups(map<@string, map<@string, bool>
     foreach (var (_, flagList) in keys) {
         var flagnameAndStatus = data[flagList];
 
-        var unset = new @string[]{}.slice();
+        var unset = slice<@string>([]);
         foreach (var (flagname, isSet) in flagnameAndStatus) {
             if (!isSet) {
                 unset = append(unset, flagname);
@@ -173,7 +173,7 @@ internal static error validateRequiredFlagGroups(map<@string, map<@string, bool>
         return fmt.Errorf("if any flags in the group [%v] are set they must all be set; missing %v"u8, flagList, unset);
     }
 
-    return default!;
+    return default;
 }
 
 internal static error validateOneRequiredFlagGroups(map<@string, map<@string, bool>> data) {
@@ -182,7 +182,7 @@ internal static error validateOneRequiredFlagGroups(map<@string, map<@string, bo
     var keys = sortedKeys(data);
     foreach (var (_, flagList) in keys) {
         var flagnameAndStatus = data[flagList];
-        slice<@string> set = default!;
+        slice<@string> set = default;
         foreach (var (flagname, isSet) in flagnameAndStatus) {
             if (isSet) {
                 set = append(setᴷ, set, flagname);
@@ -195,14 +195,14 @@ internal static error validateOneRequiredFlagGroups(map<@string, map<@string, bo
         sort.Strings(set);
         return fmt.Errorf("at least one of the flags in the group [%v] is required"u8, flagList);
     }
-    return default!;
+    return default;
 }
 
 internal static error validateExclusiveFlagGroups(map<@string, map<@string, bool>> data) {
     var keys = sortedKeys(data);
     foreach (var (_, flagList) in keys) {
         var flagnameAndStatus = data[flagList];
-        slice<@string> set = default!;
+        slice<@string> set = default;
         foreach (var (flagname, isSet) in flagnameAndStatus) {
             if (isSet) {
                 set = append(set, flagname);
@@ -215,7 +215,7 @@ internal static error validateExclusiveFlagGroups(map<@string, map<@string, bool
         sort.Strings(set);
         return fmt.Errorf("if any flags in the group [%v] are set none of the others can be; %v were all set"u8, flagList, set);
     }
-    return default!;
+    return default;
 }
 
 internal static slice<@string> sortedKeys(map<@string, map<@string, bool>> m) {
@@ -282,7 +282,7 @@ internal static void enforceFlagGroupsForCompletion(this ref Command c) {
                 foreach (var (_, fName) in strings.Split(flagList, " ")) {
                     if (fName != flagName) {
                         var flagΔ1 = c.Flags().Lookup(fName);
-                        flagΔ1.Value.Hidden = true;
+                        flagΔ1.Hidden = true;
                     }
                 }
             }

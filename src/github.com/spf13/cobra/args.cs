@@ -25,13 +25,13 @@ internal static error legacyArgs(ж<Command> Ꮡcmd, slice<@string> args) {
     ref var cmd = ref Ꮡcmd.DerefOrNull();
 
     if (!cmd.HasSubCommands()) {
-        return default!;
+        return default;
     }
 
     if (!cmd.HasParent() && len(args) > 0) {
         return fmt.Errorf("unknown command %q for %q%s"u8, args[0], cmd.CommandPath(), cmd.findSuggestions(args[0]));
     }
-    return default!;
+    return default;
 }
 
 public static error NoArgs(ж<Command> Ꮡcmd, slice<@string> args) {
@@ -40,7 +40,7 @@ public static error NoArgs(ж<Command> Ꮡcmd, slice<@string> args) {
     if (len(args) > 0) {
         return fmt.Errorf("unknown command %q for %q"u8, args[0], cmd.CommandPath());
     }
-    return default!;
+    return default;
 }
 
 public static error OnlyValidArgs(ж<Command> Ꮡcmd, slice<@string> args) {
@@ -58,11 +58,11 @@ public static error OnlyValidArgs(ж<Command> Ꮡcmd, slice<@string> args) {
             }
         }
     }
-    return default!;
+    return default;
 }
 
-public static error ArbitraryArgs(ж<Command> Ꮡcmd, slice<@string> args) {
-    return default!;
+public static error ArbitraryArgs(ж<Command> cmd, slice<@string> args) {
+    return default;
 }
 
 public static Func<ж<Command>, slice<@string>, error> MinimumNArgs(nint n) {
@@ -70,7 +70,7 @@ public static Func<ж<Command>, slice<@string>, error> MinimumNArgs(nint n) {
         if (len(args) < n) {
             return fmt.Errorf("requires at least %d arg(s), only received %d"u8, n, len(args));
         }
-        return default!;
+        return default;
     };
 }
 
@@ -79,7 +79,7 @@ public static Func<ж<Command>, slice<@string>, error> MaximumNArgs(nint n) {
         if (len(args) > n) {
             return fmt.Errorf("accepts at most %d arg(s), received %d"u8, n, len(args));
         }
-        return default!;
+        return default;
     };
 }
 
@@ -88,7 +88,7 @@ public static Func<ж<Command>, slice<@string>, error> ExactArgs(nint n) {
         if (len(args) != n) {
             return fmt.Errorf("accepts %d arg(s), received %d"u8, n, len(args));
         }
-        return default!;
+        return default;
     };
 }
 
@@ -97,7 +97,7 @@ public static Func<ж<Command>, slice<@string>, error> RangeArgs(nint min, nint 
         if (len(args) < min || len(args) > max) {
             return fmt.Errorf("accepts between %d and %d arg(s), received %d"u8, min, max, len(args));
         }
-        return default!;
+        return default;
     };
 }
 
@@ -108,12 +108,12 @@ public static Func<ж<Command>, slice<@string>, error> MatchAll(params Span<Func
     return error (ж<Command> cmd, slice<@string> args) => {
         foreach (var (_, parg) in pargsʗ1) {
             {
-                var err = parg(cmd, args); if (err != default!) {
+                var err = parg(cmd, args); if (err != nil) {
                     return err;
                 }
             }
         }
-        return default!;
+        return default;
     };
 }
 

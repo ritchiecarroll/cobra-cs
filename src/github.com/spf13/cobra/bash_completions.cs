@@ -461,48 +461,52 @@ internal static void writeCommands(io.StringWriter buf, ж<Command> Ꮡcmd) {
     WriteStringAndCheck(buf, "\n");
 }
 
-internal static void writeFlagHandler(io.StringWriter buf, @string name, map<@string, slice<@string>> annotations, ж<Command> Ꮡcmd) {
+internal static void writeFlagHandler(io.StringWriter buf, @string name, map<@string, slice<@string>> annotations, ж<Command> cmd) {
     foreach (var (key, value) in annotations) {
         var exprᴛ1 = key;
-        if (exprᴛ1 == BashCompFilenameExt) {
+        switch (ᐧ) {
+        case {} when exprᴛ1 == BashCompFilenameExt: {
             WriteStringAndCheck(buf, fmt.Sprintf("    flags_with_completion+=(%q)\n"u8, name));
 
-            @string ext = default!;
-            if (len(value) > 0){
-                ext = fmt.Sprintf("__%s_handle_filename_extension_flag "u8, Ꮡcmd.Root().Name()) + strings.Join(value, "|");
+            @string ext = default;
+            if (len(value) > 0) {
+                ext = fmt.Sprintf("__%s_handle_filename_extension_flag "u8, cmd.Root().Name()) + strings.Join(value, "|");
             } else {
                 ext = "_filedir";
             }
             WriteStringAndCheck(buf, fmt.Sprintf("    flags_completion+=(%q)\n"u8, ext));
+            break;
         }
-        else if (exprᴛ1 == BashCompCustom) {
+        case {} when exprᴛ1 == BashCompCustom: {
             WriteStringAndCheck(buf, fmt.Sprintf("    flags_with_completion+=(%q)\n"u8, name));
 
-            if (len(value) > 0){
+            if (len(value) > 0) {
                 @string handlers = strings.Join(value, "; ");
                 WriteStringAndCheck(buf, fmt.Sprintf("    flags_completion+=(%q)\n"u8, handlers));
             } else {
                 WriteStringAndCheck(buf, "    flags_completion+=(:)\n");
             }
+            break;
         }
-        else if (exprᴛ1 == BashCompSubdirsInDir) {
+        case {} when exprᴛ1 == BashCompSubdirsInDir: {
             WriteStringAndCheck(buf, fmt.Sprintf("    flags_with_completion+=(%q)\n"u8, name));
 
-            @string ext = default!;
-            if (len(value) == 1){
-                ext = fmt.Sprintf("__%s_handle_subdirs_in_dir_flag "u8, Ꮡcmd.Root().Name()) + value[0];
+            @string ext = default;
+            if (len(value) == 1) {
+                ext = fmt.Sprintf("__%s_handle_subdirs_in_dir_flag "u8, cmd.Root().Name()) + value[0];
             } else {
                 ext = "_filedir -d";
             }
             WriteStringAndCheck(buf, fmt.Sprintf("    flags_completion+=(%q)\n"u8, ext));
-        }
+            break;
+        }}
 
     }
 }
 
 internal static readonly @string cbn = "\")\n"u8;
 
-internal static void writeShortFlag(io.StringWriter buf, ref pflag.Flag flag, ж<Command> Ꮡcmd) {
+internal static void writeShortFlag(io.StringWriter buf, ref pflag.Flag flag, ж<Command> cmd) {
     @string name = flag.Shorthand;
     @string format = "    ";
     if (len(flag.NoOptDefVal) == 0) {
@@ -510,10 +514,10 @@ internal static void writeShortFlag(io.StringWriter buf, ref pflag.Flag flag, ж
     }
     format += "flags+=(\"-%s" + cbn;
     WriteStringAndCheck(buf, fmt.Sprintf(format, name));
-    writeFlagHandler(buf, "-"u8 + name, flag.Annotations, Ꮡcmd);
+    writeFlagHandler(buf, "-"u8 + name, flag.Annotations, cmd);
 }
 
-internal static void writeFlag(io.StringWriter buf, ref pflag.Flag flag, ж<Command> Ꮡcmd) {
+internal static void writeFlag(io.StringWriter buf, ref pflag.Flag flag, ж<Command> cmd) {
     @string name = flag.Name;
     @string format = "    flags+=(\"--%s";
     if (len(flag.NoOptDefVal) == 0) {
@@ -525,7 +529,7 @@ internal static void writeFlag(io.StringWriter buf, ref pflag.Flag flag, ж<Comm
         format = "    two_word_flags+=(\"--%s" + cbn;
         WriteStringAndCheck(buf, fmt.Sprintf(format, name));
     }
-    writeFlagHandler(buf, "--"u8 + name, flag.Annotations, Ꮡcmd);
+    writeFlagHandler(buf, "--"u8 + name, flag.Annotations, cmd);
 }
 
 internal static void writeLocalNonPersistentFlag(io.StringWriter buf, ref pflag.Flag flag) {
@@ -540,16 +544,16 @@ internal static void writeLocalNonPersistentFlag(io.StringWriter buf, ref pflag.
     }
 }
 
-internal static void prepareCustomAnnotationsForFlags(ж<Command> Ꮡcmd) {
+internal static void prepareCustomAnnotationsForFlags(ж<Command> cmd) {
     GoFrame ᒐ = default;
     try {
         flagCompletionMutex.RLock();
         defer(flagCompletionMutex.RUnlock, ref ᒐ);
         foreach (var (flag, _) in flagCompletionFunctions) {
-            if ((~flag).Annotations == default!) {
-                flag.Value.Annotations = new map<@string, slice<@string>>{};
+            if (flag.Annotations == nil) {
+                flag.Annotations = new map<@string, slice<@string>>{};
             }
-            flag.Value.Annotations[BashCompCustom] = new @string[]{fmt.Sprintf("__%[1]s_handle_go_custom_completion"u8, Ꮡcmd.Root().Name())}.slice();
+            flag.Annotations[BashCompCustom] = slice<@string>([fmt.Sprintf("__%[1]s_handle_go_custom_completion"u8, cmd.Root().Name())]);
         }
     }
     catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); }
@@ -584,10 +588,10 @@ internal static void writeFlags(io.StringWriter buf, ж<Command> Ꮡcmd) {
             return;
         }
         writeFlag(buf, ref (flag).DerefOrNull(), Ꮡcmd);
-        if (len((~flag).Shorthand) > 0) {
+        if (len(flag.Shorthand) > 0) {
             writeShortFlag(buf, ref (flag).DerefOrNull(), Ꮡcmd);
         }
-        if (localNonPersistentFlagsʗ1.Lookup((~flag).Name) != nil && !(~Ꮡcmd.Root()).TraverseChildren) {
+        if (localNonPersistentFlagsʗ1.Lookup(flag.Name) != nil && !Ꮡcmd.Root().TraverseChildren) {
             writeLocalNonPersistentFlag(buf, ref (flag).DerefOrNull());
         }
     });
@@ -596,7 +600,7 @@ internal static void writeFlags(io.StringWriter buf, ж<Command> Ꮡcmd) {
             return;
         }
         writeFlag(buf, ref (flag).DerefOrNull(), Ꮡcmd);
-        if (len((~flag).Shorthand) > 0) {
+        if (len(flag.Shorthand) > 0) {
             writeShortFlag(buf, ref (flag).DerefOrNull(), Ꮡcmd);
         }
     });
@@ -604,24 +608,24 @@ internal static void writeFlags(io.StringWriter buf, ж<Command> Ꮡcmd) {
     WriteStringAndCheck(buf, "\n");
 }
 
-internal static void writeRequiredFlag(io.StringWriter buf, ж<Command> Ꮡcmd) {
+internal static void writeRequiredFlag(io.StringWriter buf, ж<Command> cmd) {
     WriteStringAndCheck(buf, "    must_have_one_flag=()\n");
-    var flags = Ꮡcmd.NonInheritedFlags();
+    var flags = cmd.NonInheritedFlags();
     flags.VisitAll((ж<pflag.Flag> flag) => {
         if (nonCompletableFlag(ref (flag).DerefOrNull())) {
             return;
         }
         {
-            var (_, ok) = (~flag).Annotations[BashCompOneRequiredFlag, ꟷ]; if (ok) {
+            var (_, ok) = flag.Annotations[BashCompOneRequiredFlag, ꟷ]; if (ok) {
                 @string format = "    must_have_one_flag+=(\"--%s";
                 if ((~flag).Value.Type() != "bool"u8) {
                     format += "="u8;
                 }
                 format += cbn;
-                WriteStringAndCheck(buf, fmt.Sprintf(format, (~flag).Name));
+                WriteStringAndCheck(buf, fmt.Sprintf(format, flag.Name));
 
-                if (len((~flag).Shorthand) > 0) {
-                    WriteStringAndCheck(buf, fmt.Sprintf("    must_have_one_flag+=(\"-%s" + cbn, (~flag).Shorthand));
+                if (len(flag.Shorthand) > 0) {
+                    WriteStringAndCheck(buf, fmt.Sprintf("    must_have_one_flag+=(\"-%s" + cbn, flag.Shorthand));
                 }
             }
         }
@@ -637,7 +641,7 @@ internal static void writeRequiredNouns(io.StringWriter buf, ref Command cmd) {
         value = strings.SplitN(value, "\t", 2)[0];
         WriteStringAndCheck(buf, fmt.Sprintf("    must_have_one_noun+=(%q)\n"u8, value));
     }
-    if (cmd.ValidArgsFunction != default!) {
+    if (cmd.ValidArgsFunction != nil) {
         WriteStringAndCheck(buf, "    has_completion_function=1\n");
     }
 }
@@ -681,7 +685,7 @@ internal static void gen(io.StringWriter buf, ж<Command> Ꮡcmd) {
     commandName = strings.ReplaceAll(commandName, " ", "_");
     commandName = strings.ReplaceAll(commandName, ":", "__");
 
-    if (Ꮡcmd.Root() == Ꮡcmd){
+    if (Ꮡcmd.Root() == Ꮡcmd) {
         WriteStringAndCheck(buf, fmt.Sprintf("_%s_root_command()\n{\n"u8, commandName));
     } else {
         WriteStringAndCheck(buf, fmt.Sprintf("_%s()\n{\n"u8, commandName));
@@ -723,7 +727,7 @@ public static error GenBashCompletionFile(this ж<Command> Ꮡc, @string filenam
     GoFrame ᒐ = default;
     try {
         var (outFile, err) = os.Create(filename);
-        if (err != default!) {
+        if (err != nil) {
             return err;
         }
         var outFileʗ1 = outFile;
@@ -731,7 +735,7 @@ public static error GenBashCompletionFile(this ж<Command> Ꮡc, @string filenam
 
         return Ꮡc.GenBashCompletion(new os.FileжWriter(outFile));
     }
-    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default!; }
+    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default; }
     finally { ᒐ.Run(); }
 }
 

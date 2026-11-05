@@ -10,20 +10,6 @@
 // importing type aliases at a namespace level.
 
 // <ImportedTypeAliases>
-global using osꓸDirEntry = go.io.fs_package.DirEntry;
-global using osꓸFileInfo = go.io.fs_package.FileInfo;
-global using osꓸFileMode = go.io.fs_package.FileMode;
-global using osꓸPathError = go.io.fs_package.PathError;
-global using osꓸSignal = go.os_package.ΔSignal;
-global using pflagꓸParseErrorsWhitelist = go.github.com.spf13.pflag_package.ParseErrorsAllowlist;
-global using reflectꓸChanDir = go.reflect_package.ΔChanDir;
-global using reflectꓸKind = go.reflect_package.ΔKind;
-global using reflectꓸMethod = go.reflect_package.ΔMethod;
-global using reflectꓸType = go.reflect_package.ΔType;
-global using reflectꓸValue = go.reflect_package.ΔValue;
-global using timeꓸLocation = go.time_package.ΔLocation;
-global using timeꓸMonth = go.time_package.ΔMonth;
-global using timeꓸWeekday = go.time_package.ΔWeekday;
 // </ImportedTypeAliases>
 
 using go;
@@ -65,6 +51,14 @@ using static go.github.com.spf13.cobra_package;
 // <ImplicitConversions>
 // </ImplicitConversions>
 
+// The struct types whose fields this package reaches through a pointer, as Go spells it, `p.f`:
+// go2cs-gen emits a field property on the pointer for each of their fields.
+[assembly: GoFieldAccess(typeof(Command))]
+[assembly: GoFieldAccess(typeof(Group))]
+[assembly: GoFieldAccess(typeof(go.github.com.spf13.pflag_package.Flag))]
+[assembly: GoFieldAccess(typeof(go.github.com.spf13.pflag_package.FlagSet))]
+[assembly: GoFieldAccess(typeof(tmplFunc))]
+
 // Go source positions are recorded here, one `GoPositionMap` attribute per converted
 // source file in this compilation, so that `runtime.Caller` and the tracebacks built on it
 // can name the GO file and line a frame was converted from rather than the emitted C# one.
@@ -73,18 +67,18 @@ using static go.github.com.spf13.cobra_package;
 // or has none - golib, the BCL and hand-written conversions - and reports its own C# position.
 
 // <GoSourcePositionMaps>
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/active_help.go", "active_help.cs", "ABpMggACEIKCgpSsgg==")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/args.go", "args.cs", "ABc4pIKogpSoooKUqrKGgoKUgoK4qIKogoKClLqCgoKUuoKCgpS6goKClLqikoKAgrYAAxCC", "75-80:1;85-90:1;95-100:1;105-110:1;115-122:1")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/bash_completions.go", "bash_completions.cs", "ACBIgoIA7wLcBYKCggAfPAAIDqaigoKClIKUpoKClJSCgpSUpJSCgpS2lIKClJT+goKCgpSCgqaCgoKClIKCgoKUpoKCgoKUgoK6ooKCioKUtAANBKKCAAEQgqaCkoKUgoKYgqaCgpSCgrimgoKCgoKUgIKCgpSClILsgoKCpoKUgriigqaUgoKClIKkgoKCgriigoKUlIKClIKUpoKCgpSCgoKCgqiigoKClIKUgqaCqKKCgpSk", "566-579:1;580-588:2;596-612:1", "", "35=activeHelpEnvVar/1/1/363")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/bash_completionsV2.go", "bash_completionsV2.cs", "ABcwgoKCgqaCgoKmALED4gbCgoKUpNqC")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/cobra.go", "cobra.cs", "AB5AACNqgqqCgryiqqIAAhCCkpSUpKSmlJSkpKasgoKUlKSkpKaCrIKClKiCgqaCpoKCksyCgoKUgoKClIKUgoKClIKClIKUuqaCgoKmqIKCgrqCgg==", "182-187:1")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/command.go", "command.cs", "AHmaBIKqgqqCroKCqoKqgqqCqIKogoKClKqCqIKogqiCgpaohKiCgoKUqIKCgpSogqqCgoKUgrqCqIKogqiCpoKClIKUpoKClIKUpoKClIKUqqKClIKUgoKCgoKUvIKCpoKUrIKqooKUgpSCgoaCgs6CgqaCpqyCgqikgpSCgpSWgpSsgoKmgpQABBCCgpTMgoKUzIKClKqCgqaClKqCgqaClKqCgqaClKqCgqaClKiCgqaClKaCgoKUpqKCpoKClKaygpSUgpSCgoKClqiogpSCtui8ooKUgpSCgoKWpKiCqIKCgoLopoKsgpSCgoKUlIKClKaCgpSmgoKUgpSCgIKCgramooKCgoKUgriGpqqygpSCmIKCtoKCtoKCtoK2goKmgIKklKiCgoKCgoKCgpSCgsqogoKCuqKClKqC5uKCpoKqgpSCgqqChoKmgqiCgoKClIKCgoKUuIKmlJSCgqaAgraCgoiWpoKCgIKkgqSCgoK4goCCtIKmgIKkgIK2goCCtpSCgIK0gpSCgoCCpIKkgoKCyuaCgriCgr6igqyCgqyigqjCgqiCqIKolJaCqJaYlIKClJSEgpSCgpSmgoKqgqaChoKCqoKqgqamooKUqIKCpoKSgoKClIK4gpSqgoSCpr6igoKCgoKUlIIAAxCigqaCgoKClJSClJS+ooKmggAIDIKCgpSElIKCgri2goKCloKmgoLcgqiCgoKCzICigKKApoSCgpSosoKClISCgpSCgpSCgpaClIK6gqiCgoKmqIKCgqaooqiygoKCgoKCprSUgoKCgoKClIKClIKCzKKooqiiqKKooqiiqIKClKqCgIKkqIKCgoKUlIKUgpTaooKUgoKUgoKClLiCgoKCpriCgoLKqIKCgoKUqIKCgqaqgoKUqoKCgpSCgoKmqIKogqiCqIKqooKmgqaCpgACEISCqIKCuqyEgoK6qoaCgryogqiCqoKCgoKUpqqilIKigqaqopSCgoKUlIKCpoSCpoKCqqKUgoKClKaCgqaSgqaqgqiCgoKClJSogoKCgoKClIKCqIKogqiCqIKqgqiCqoKqgqiylIKmqLKCpoKClKiigqaClIKWlISCpqiCqqKCgqyigoKCpoKmlIK+goKmAChSgoKCgpSClIKClIKClIKCgoKCgriCgoKCuIKCgoLcgoKUgoKUgoKCgriClIIACBCCgoKClIKCgpSClP6CgoI=", "451-459:1;491-500:1;555-557:1;760-772:1;1187-1195:1;1274-1292:1;1293-1308:2;1505-1535:1;1510-1516:1.1;1519-1527:1.2;1706-1710:1;1731-1736:1;1760-1764:1;1920-1922:1", "", "1066=DisplayName/1/1/4")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/completions.go", "completions.cs", "ACRMlgAIFoIAGIwBogACJIIAAhCCAAIQggADEqKCgpSClICCpILYooKCpoKUgtiigoKUgpSClIKUgpSClIKmgpSoogAKFoKCrIKCgIK2goKihJSErp6WrJimgoKMAAcYtoKUgoKGgp6CgqaUhJSegoKunIKCloCCtoKEloSAgsyCqoKmhICChAAEEoCChJbIgpYAARCEloKCgpqGvpKekriChqaKpoSCgoK4goaEgpKCzIiCgoKUzJiChIKCppiCgoIABRAABBSCgoKClJSGgoKmpqKAhKSAhKSmgoKmgoKEAAIggoKmpoKUgoCChAAFEJKUkqamooamgoKCmoKAhISclIKWyIKCgoiAgoScmOyEpoKEpoKIgrgAAhCygqaChLiWgoKEgrgADBaUjoKGgriCkoIAHz6CpgAfOoKUpoKmABUqgqYAER6ClKiCpqaigoaAgpSCgIKU2K6imICClIKSyIS0rIKogoKoggAFEpqEgoIAAhCCgoKU", "161-163:1;242-294:1;444-456:1;461-463:2;469-471:3;505-509:4;632-639:1;644-646:2;647-649:3;828-830:1;864-869:2;892-894:3;914-920:4", "", "168=Sprintf/1/2/1,MinimumNArgs/1/1/6,Sprintf/2/2/8;319=Type/1/3/1,Contains/1/2/1,Type/2/3/2,Contains/2/2/2,Type/3/3/3,HasPrefix/1/1/3;567=Root/1/1/5,Name/1/1/5,Sprintf/1/1/3;584=Name/2/2/1;594=Sprintf/1/2/2,Root/1/1/23,Name/1/1/23,Sprintf/2/2/3;630=Sprintf/1/2/2,Root/1/1/25,Name/1/1/25,Sprintf/2/2/3;672=Sprintf/1/2/2,Root/1/1/14,Name/1/1/14,Sprintf/2/2/3;698=Sprintf/1/2/2,Root/1/1/11,Name/1/1/11,Sprintf/2/2/3")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/fish_completions.go", "fish_completions.cs", "ABgyhIKClIKClIIA8AHgA4KCgoKowoKClKQ=", "", "", "35=activeHelpEnvVar/1/1/236")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/flag_groups.go", "flag_groups.cs", "AB5CsoKCgoKUgITesoKCgoKUgITesoKCgoKWgILegoKmmIKCgsKCgqaAgqSAgqSAgqSmooKCgqamgoKCgoKWgqaCgrjKgoKClIKCgqaCqIKmpqKCgoKCgoKmgqiClKaCgoKCgoKCpoKogpSmgoKCgoKUggACEIKCpoKCgoLCgoKqgoKEggAFEIKUooK8goLOgoKIgoKC", "93-97:1;234-238:1")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/powershell_completions.go", "powershell_completions.cs", "ABg4hIKClIKClACcAqYEgoKCgqbCgoKUpNiCqoKogqqC", "", "", "34=activeHelpEnvVar/1/1/272")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/shell_completions.go", "shell_completions.cs", "ABYwgqyCrIKqogACEoKsoqqiAAISgqqCrIKqgg==")]
-[assembly: go.GoPositionMap("github.com/spf13/cobra@v1.10.2/zsh_completions.go", "zsh_completions.cs", "ABgygqqCqIKqggACGKIAAhSipsKCgpSk1oKCgoKmgoKClA==")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/active_help.go", "active_help.cs", "ABpMggACEIKCgpSsgg==")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/args.go", "args.cs", "ABc4pIKogpSoooKUqrKGgoKUgoK4qIKogoKClLqCgoKUuoKCgpS6goKClLqikoKAgrYAAxCC", "75-80:1;85-90:1;95-100:1;105-110:1;115-122:1")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/bash_completions.go", "bash_completions.cs", "ACBIgoIA7wLcBYKCggAfPAAIDqaigoKClIKUpoKCpJSCgpSUtJSCgpTGlIKClJQACA6CgoKClIKCpoKCgoKUgoKCgpSmgoKCgpSCgrqigoKKgpS0AA0EooIAARCCpoKSgpSCgpiCpoKClIKCuKaCgoKCgpSAgoKClIKUguyCgoKmgpSCuKKCppSCgoKUgqSCgoKCuKKCgpSUgoKUgpSmgoKClIKCgoKCqKKCgoKUgpSCpoKoooKClKQ=", "566-579:1;580-588:2;596-612:1", "", "35=activeHelpEnvVar/1/1/363", "734:21")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/bash_completionsV2.go", "bash_completionsV2.cs", "ABcwgoKCgqaCgoKmALED4gbCgoKUpNqC", "", "", "", "481:21")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/cobra.go", "cobra.cs", "AB5AAClqgqqCgryiqqIAAhCCkpSUtLS2lJS0tLasgoKUlLSkpKaCrIKClKiCgqaCpoKCksyCgoKUgoKClIKUgoKClIKClIKUuqaCgoKmqIKCgrqCgg==", "182-187:1")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/command.go", "command.cs", "AHmaBIKqgqqCroKCqoKqgqqCqIKogoKClKqCqIKogqiCgpaohKiCgoKUqIKCgpSogqqCgoKUgrqCqIKogqiCpoKClIKUpoKClIKUpoKClIKUqqKClIKUgoKCgoKUvIKCpoKUrIKqooKUgpSCgoaCgs6CgqaCpqyCgqikgpSCgpSWgpSsgoKmgpQABBCCgpTMgoKUzIKClKqCgqaClKqCgqaClKqCgqaClKqCgqaClKiCgqaClKaCgoKUpqKCpoKClKaygpSUgpSCgoKClqiogpSCtui8ooKUgpSCgoKWpKiCqIKCgoLopoKsgpSCgoKUlIKClKaCgpSmgoKUgpSCgIKCgramooKCgoKUgriGpqqygpSCmIKCtoKCtoKCtoK2goKmgIKklKiCgoKCgoKCgpSCgsqogoKCuqKClKqC5uKCpoKqgpSCgqqChoKmgqiCgoKClIKCgoKUuIKmlJSCgqaAgraCgoiWpoKCgIKkgpSCgoK4goCCpIKmgIKkgIK2goCCtpSCgIKkgpSCgoCCpIKUgoKCyuaCgriCgr6igqyCgqyigqjCgqiCqIKolJaCqJaYlIKClJSEgpSCgpSmgoKqgqaChoKCqoKqgqamooKUqIKCpoKCgoKClIK4gpSqgoSCpr6igoKCgoKUlIIAAxCigqaCgoKClJSClJS+ooKmggAIDIKCgpSElIKCgri2goKCloKmgoLcgqiCgoKCzICigKKApoSCgpSosoKClISCgpSCgpSCgpaClIK6gqiCgoKmqIKCgqaooqiygoKCgoKCprSUgoKCgoKClIKClIKCzKKooqiiqKKooqiiqIKClKqCgIKkqIKCgoKUlIKUgpTaooKUgoKUgoKClLiCgoKCpriCgoLKqIKCgoKUqIKCgqaqgoKUqoKCgpSCgoKmqIKogqiCqIKqooKmgqaCpgACEISCqIKCuqyEgoK6qoaCgryogqiCqoKCgoKUpqqilIKigqaqopSCgoKUlIKCpoSCpoKCqqKUgoKClKaCgqaSgqaqgqiCgoKClJSogoKCgoKClIKCqIKogqiCqIKqgqiCqoKqgqiylIKmqLKCpoKClKiigqaClIKWlISCpqiCqqKCgqyigoKCpoKmlIK+goKmAChSgoKCgpSClIKClIKClIKCgoKCgriCgoKCuIKCgoLcgoKUgoKUgoKCgriClIIACBCCgoKClIKCgpSClP6CgoI=", "451-459:1;491-500:1;555-557:1;760-772:1;1187-1195:1;1274-1292:1;1293-1308:2;1505-1535:1;1510-1516:1.1;1519-1527:1.2;1706-1710:1;1731-1736:1;1760-1764:1;1920-1922:1", "", "1061=DisplayName/1/1/4")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/completions.go", "completions.cs", "ACRMlgAIFoIAGIwBogACJIIAAhCCAAIQggADEqKCgpSClICCpILYooKCpoKUgtiigoKUgpSClIKUgpSClIKmgpSoogAKFoKCrIKCgIK2goKihJSErp6WrJimgoKMAAcYtoKUgoKGgp6CgqaUhJSegoKunIKCloCCtoKEloSAgsyCqoKmhICChAAEEoCChJbIgpYAARCEloKCgpqGvpKekriChqaKpoSCgoK4goaEgpKCzIiCgoKUzJiChIKCppiCgoIABRAABBSCgoKClJSGgoKmpqKAhKSAhKSmgoKmgoKEAAIggoKmpoKUgoCChAAFEJKUkqamooamgoKCmoKAhISclIKWyIKCgoiAgoScmOyEpoKEpoKIgrgAAhCygqaChLiWgoKEgrgADBaUjoKGgriCgoIAHz6CpgAfOoKUpoKmABUqgqYAER6ClKiCpqaigoaAgpSCgIKU2K6imICClIKSyIS0rIKogoKoggAFEpqEgoIAAhCCgoKU", "161-163:1;242-294:1;444-456:1;461-463:2;469-471:3;505-509:4;632-639:1;644-646:2;647-649:3;828-830:1;864-869:2;892-894:3;914-920:4", "", "168=Sprintf/1/2/1,MinimumNArgs/1/1/6,Sprintf/2/2/8;319=Type/1/3/1,Contains/1/2/1,Type/2/3/2,Contains/2/2/2,Type/3/3/3,HasPrefix/1/1/3;567=Root/1/1/5,Name/1/1/5,Sprintf/1/1/3;584=Name/2/2/1;593=Sprintf/1/2/2,Root/1/1/23,Name/1/1/23,Sprintf/2/2/3;629=Sprintf/1/2/2,Root/1/1/25,Name/1/1/25,Sprintf/2/2/3;671=Sprintf/1/2/2,Root/1/1/14,Name/1/1/14,Sprintf/2/2/3;697=Sprintf/1/2/2,Root/1/1/11,Name/1/1/11,Sprintf/2/2/3", "762:33")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/fish_completions.go", "fish_completions.cs", "ABgyhIKClIKClIIA8AHgA4KCgoKowoKClKQ=", "", "", "35=activeHelpEnvVar/1/1/236", "293:21")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/flag_groups.go", "flag_groups.cs", "AB5CsoKCgoKUgITesoKCgoKUgITesoKCgoKWgILegoKmmIKCgsKCgqaAgqSAgqSAgqSmooKCgqamgoKCgoKWgqaCgrjKgoKClIKCgqaCqIKmpqKCgoKCgoKmgqiClKaCgoKCgoKCpoKogpSmgoKCgoKUggACEIKCpoKCgoLCgoKqgoKEggAFEIKUooK8goLOgoKIgoKC", "93-97:1;234-238:1")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/powershell_completions.go", "powershell_completions.cs", "ABg4hIKClIKClACcAqYEgoKCgqbCgoKUpNiCqoKogqqC", "", "", "34=activeHelpEnvVar/1/1/272", "336:21")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/shell_completions.go", "shell_completions.cs", "ABYwgqyCrIKqogACEoKsoqqiAAISgqqCrIKqgg==")]
+[assembly: GoPositionMap("github.com/spf13/cobra@v1.10.2/zsh_completions.go", "zsh_completions.cs", "ABgygqqCqIKqggACGKIAAhSipsKCgpSk1oKCgoKmgoKClA==", "", "", "", "63:21")]
 // </GoSourcePositionMaps>
 
 namespace go.github.com.spf13;

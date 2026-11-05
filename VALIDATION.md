@@ -11,7 +11,7 @@ Both sides of every reading were built with `-tags purego,math_big_pure_go,safe`
 
 | Package | Matched | Disclosed | Input digest | Proof |
 |:--|--:|--:|:--|:--|
-| `github.com/spf13/cobra` | 405 | 0 | `sha256-a44b3ed0c6d3da908058c57baff818031996b686d066dbf84fbacb8018b5e557` | [index.md](index.md) |
+| `github.com/spf13/cobra` | 405 | 0 | `sha256-c8b47159914ba4eaf4e962cc6090feae243eaa993125009de91a86947915239f` | [index.md](index.md) |
 
 **Total: 405 matched · 0 disclosed** across 1 package(s).
 

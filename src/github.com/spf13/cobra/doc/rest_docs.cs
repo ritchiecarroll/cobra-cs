@@ -29,10 +29,10 @@ using pflag = global::go.github.com.spf13.pflag_package;
 
 partial class doc_package {
 
-internal static error printOptionsReST(ж<bytes.Buffer> Ꮡbuf, ж<cobra.Command> Ꮡcmd, @string name) {
+internal static error printOptionsReST(ж<bytes.Buffer> Ꮡbuf, ж<cobra.Command> cmd, @string name) {
     ref var buf = ref Ꮡbuf.DerefOrNull();
 
-    var flags = Ꮡcmd.NonInheritedFlags();
+    var flags = cmd.NonInheritedFlags();
     flags.SetOutput(new bytes_BufferжWriter(Ꮡbuf));
     if (flags.HasAvailableFlags()) {
         buf.WriteString("Options\n");
@@ -41,7 +41,7 @@ internal static error printOptionsReST(ж<bytes.Buffer> Ꮡbuf, ж<cobra.Command
         buf.WriteString("\n");
     }
 
-    var parentFlags = Ꮡcmd.InheritedFlags();
+    var parentFlags = cmd.InheritedFlags();
     parentFlags.SetOutput(new bytes_BufferжWriter(Ꮡbuf));
     if (parentFlags.HasAvailableFlags()) {
         buf.WriteString("Options inherited from parent commands\n");
@@ -49,15 +49,15 @@ internal static error printOptionsReST(ж<bytes.Buffer> Ꮡbuf, ж<cobra.Command
         parentFlags.PrintDefaults();
         buf.WriteString("\n");
     }
-    return default!;
+    return default;
 }
 
 internal static @string defaultLinkHandler(@string name, @string @ref) {
     return fmt.Sprintf("`%s <%s.rst>`_"u8, name, @ref);
 }
 
-public static error GenReST(ж<cobra.Command> Ꮡcmd, io.Writer w) {
-    return GenReSTCustom(Ꮡcmd, w, defaultLinkHandler);
+public static error GenReST(ж<cobra.Command> cmd, io.Writer w) {
+    return GenReSTCustom(cmd, w, defaultLinkHandler);
 }
 
 public static error GenReSTCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@string, @string, @string> linkHandler) {
@@ -95,7 +95,7 @@ public static error GenReSTCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
     }
 
     {
-        var errΔ1 = printOptionsReST(buf, Ꮡcmd, name); if (errΔ1 != default!) {
+        var errΔ1 = printOptionsReST(buf, Ꮡcmd, name); if (errΔ1 != nil) {
             return errΔ1;
         }
     }
@@ -106,10 +106,10 @@ public static error GenReSTCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
             var parent = cmd.Parent();
             @string pname = parent.CommandPath();
             @ref = strings.ReplaceAll(pname, " ", "_");
-            fmt.Fprintf(new bytes_BufferжWriter(buf), "* %s \t - %s\n"u8, linkHandler(pname, @ref), (~parent).Short);
+            fmt.Fprintf(new bytes_BufferжWriter(buf), "* %s \t - %s\n"u8, linkHandler(pname, @ref), parent.Short);
             cmd.VisitParents((ж<cobra.Command> c) => {
-                if ((~c).DisableAutoGenTag) {
-                    Ꮡcmd.Value.DisableAutoGenTag = c.Value.DisableAutoGenTag;
+                if (c.DisableAutoGenTag) {
+                    Ꮡcmd.Value.DisableAutoGenTag = c.DisableAutoGenTag;
                 }
             });
         }
@@ -123,7 +123,7 @@ public static error GenReSTCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
             }
             @string cname = name + " "u8 + child.Name();
             @ref = strings.ReplaceAll(cname, " ", "_");
-            fmt.Fprintf(new bytes_BufferжWriter(buf), "* %s \t - %s\n"u8, linkHandler(cname, @ref), (~child).Short);
+            fmt.Fprintf(new bytes_BufferжWriter(buf), "* %s \t - %s\n"u8, linkHandler(cname, @ref), child.Short);
         }
         buf.WriteString("\n");
     }
@@ -134,9 +134,9 @@ public static error GenReSTCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
     return err;
 }
 
-public static error GenReSTTree(ж<cobra.Command> Ꮡcmd, @string dir) {
+public static error GenReSTTree(ж<cobra.Command> cmd, @string dir) {
     var emptyStr = @string (@string s) => "";
-    return GenReSTTreeCustom(Ꮡcmd, dir, emptyStr, defaultLinkHandler);
+    return GenReSTTreeCustom(cmd, dir, emptyStr, defaultLinkHandler);
 }
 
 public static error GenReSTTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Func<@string, @string> filePrepender, Func<@string, @string, @string> linkHandler) {
@@ -149,7 +149,7 @@ public static error GenReSTTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
                 continue;
             }
             {
-                var errΔ1 = GenReSTTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != default!) {
+                var errΔ1 = GenReSTTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
                     return errΔ1;
                 }
             }
@@ -158,39 +158,39 @@ public static error GenReSTTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
         @string basename = strings.ReplaceAll(cmd.CommandPath(), " ", "_") + ".rst"u8;
         @string filename = filepath.Join(dir, basename);
         var (f, err) = os.Create(filename);
-        if (err != default!) {
+        if (err != nil) {
             return err;
         }
         var fʗ1 = f;
         defer(() => fʗ1.Close(), ref ᒐ);
 
         {
-            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != default!) {
+            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
                 return errΔ2;
             }
         }
         {
-            var errΔ3 = GenReSTCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != default!) {
+            var errΔ3 = GenReSTCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
                 return errΔ3;
             }
         }
-        return default!;
+        return default;
     }
-    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default!; }
+    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default; }
     finally { ᒐ.Run(); }
 }
 
 internal static @string indentString(@string s, @string p) {
-    slice<byte> res = default!;
+    slice<byte> res = default;
     var b = slice<byte>(s);
     var prefix = slice<byte>(p);
     var bol = true;
     foreach (var (_, c) in b) {
-        if (bol && c != (rune)'\n') {
+        if (bol && c != '\n') {
             res = appendꓸꓸꓸ(res, prefix);
         }
         res = append(res, c);
-        bol = c == (rune)'\n';
+        bol = c == '\n';
     }
     return (@string)res;
 }

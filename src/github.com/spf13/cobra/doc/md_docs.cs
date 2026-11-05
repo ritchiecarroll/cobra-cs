@@ -31,10 +31,10 @@ partial class doc_package {
 
 internal static readonly @string markdownExtension = ".md"u8;
 
-internal static error printOptions(ж<bytes.Buffer> Ꮡbuf, ж<cobra.Command> Ꮡcmd, @string name) {
+internal static error printOptions(ж<bytes.Buffer> Ꮡbuf, ж<cobra.Command> cmd, @string name) {
     ref var buf = ref Ꮡbuf.DerefOrNull();
 
-    var flags = Ꮡcmd.NonInheritedFlags();
+    var flags = cmd.NonInheritedFlags();
     flags.SetOutput(new bytes_BufferжWriter(Ꮡbuf));
     if (flags.HasAvailableFlags()) {
         buf.WriteString("### Options\n\n```\n");
@@ -42,18 +42,18 @@ internal static error printOptions(ж<bytes.Buffer> Ꮡbuf, ж<cobra.Command> �
         buf.WriteString("```\n\n");
     }
 
-    var parentFlags = Ꮡcmd.InheritedFlags();
+    var parentFlags = cmd.InheritedFlags();
     parentFlags.SetOutput(new bytes_BufferжWriter(Ꮡbuf));
     if (parentFlags.HasAvailableFlags()) {
         buf.WriteString("### Options inherited from parent commands\n\n```\n");
         parentFlags.PrintDefaults();
         buf.WriteString("```\n\n");
     }
-    return default!;
+    return default;
 }
 
-public static error GenMarkdown(ж<cobra.Command> Ꮡcmd, io.Writer w) {
-    return GenMarkdownCustom(Ꮡcmd, w, (@string s) => s);
+public static error GenMarkdown(ж<cobra.Command> cmd, io.Writer w) {
+    return GenMarkdownCustom(cmd, w, (@string s) => s);
 }
 
 public static error GenMarkdownCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@string, @string> linkHandler) {
@@ -82,7 +82,7 @@ public static error GenMarkdownCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Fun
     }
 
     {
-        var errΔ1 = printOptions(buf, Ꮡcmd, name); if (errΔ1 != default!) {
+        var errΔ1 = printOptions(buf, Ꮡcmd, name); if (errΔ1 != nil) {
             return errΔ1;
         }
     }
@@ -93,10 +93,10 @@ public static error GenMarkdownCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Fun
             @string pname = parent.CommandPath();
             @string link = pname + markdownExtension;
             link = strings.ReplaceAll(link, " ", "_");
-            fmt.Fprintf(new bytes_BufferжWriter(buf), "* [%s](%s)\t - %s\n"u8, pname, linkHandler(link), (~parent).Short);
+            fmt.Fprintf(new bytes_BufferжWriter(buf), "* [%s](%s)\t - %s\n"u8, pname, linkHandler(link), parent.Short);
             cmd.VisitParents((ж<cobra.Command> c) => {
-                if ((~c).DisableAutoGenTag) {
-                    Ꮡcmd.Value.DisableAutoGenTag = c.Value.DisableAutoGenTag;
+                if (c.DisableAutoGenTag) {
+                    Ꮡcmd.Value.DisableAutoGenTag = c.DisableAutoGenTag;
                 }
             });
         }
@@ -111,7 +111,7 @@ public static error GenMarkdownCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Fun
             @string cname = name + " "u8 + child.Name();
             @string link = cname + markdownExtension;
             link = strings.ReplaceAll(link, " ", "_");
-            fmt.Fprintf(new bytes_BufferжWriter(buf), "* [%s](%s)\t - %s\n"u8, cname, linkHandler(link), (~child).Short);
+            fmt.Fprintf(new bytes_BufferжWriter(buf), "* [%s](%s)\t - %s\n"u8, cname, linkHandler(link), child.Short);
         }
         buf.WriteString("\n");
     }
@@ -122,10 +122,10 @@ public static error GenMarkdownCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Fun
     return err;
 }
 
-public static error GenMarkdownTree(ж<cobra.Command> Ꮡcmd, @string dir) {
+public static error GenMarkdownTree(ж<cobra.Command> cmd, @string dir) {
     var identity = @string (@string s) => s;
     var emptyStr = @string (@string s) => "";
-    return GenMarkdownTreeCustom(Ꮡcmd, dir, emptyStr, identity);
+    return GenMarkdownTreeCustom(cmd, dir, emptyStr, identity);
 }
 
 public static error GenMarkdownTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Func<@string, @string> filePrepender, Func<@string, @string> linkHandler) {
@@ -138,7 +138,7 @@ public static error GenMarkdownTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir,
                 continue;
             }
             {
-                var errΔ1 = GenMarkdownTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != default!) {
+                var errΔ1 = GenMarkdownTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
                     return errΔ1;
                 }
             }
@@ -147,25 +147,25 @@ public static error GenMarkdownTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir,
         @string basename = strings.ReplaceAll(cmd.CommandPath(), " ", "_") + markdownExtension;
         @string filename = filepath.Join(dir, basename);
         var (f, err) = os.Create(filename);
-        if (err != default!) {
+        if (err != nil) {
             return err;
         }
         var fʗ1 = f;
         defer(() => fʗ1.Close(), ref ᒐ);
 
         {
-            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != default!) {
+            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
                 return errΔ2;
             }
         }
         {
-            var errΔ3 = GenMarkdownCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != default!) {
+            var errΔ3 = GenMarkdownCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
                 return errΔ3;
             }
         }
-        return default!;
+        return default;
     }
-    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default!; }
+    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default; }
     finally { ᒐ.Run(); }
 }
 

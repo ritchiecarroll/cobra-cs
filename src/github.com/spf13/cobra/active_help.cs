@@ -28,10 +28,10 @@ public static slice<Completion> AppendActiveHelp(slice<Completion> compArray, @s
     return append(compArray, fmt.Sprintf("%s%s"u8, activeHelpMarker, activeHelpStr));
 }
 
-public static @string GetActiveHelpConfig(ж<Command> Ꮡcmd) {
+public static @string GetActiveHelpConfig(ж<Command> cmd) {
     @string activeHelpCfg = os.Getenv(activeHelpGlobalEnvVar);
     if (activeHelpCfg != activeHelpGlobalDisable) {
-        activeHelpCfg = os.Getenv(activeHelpEnvVar(Ꮡcmd.Root().Name()));
+        activeHelpCfg = os.Getenv(activeHelpEnvVar(cmd.Root().Name()));
     }
     return activeHelpCfg;
 }

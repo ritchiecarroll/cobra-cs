@@ -47,10 +47,10 @@ partial struct cmdDoc {
     public slice<@string> SeeAlso; /*`yaml:"see_also,omitempty"`*/
 }
 
-public static error GenYamlTree(ж<cobra.Command> Ꮡcmd, @string dir) {
+public static error GenYamlTree(ж<cobra.Command> cmd, @string dir) {
     var identity = @string (@string s) => s;
     var emptyStr = @string (@string s) => "";
-    return GenYamlTreeCustom(Ꮡcmd, dir, emptyStr, identity);
+    return GenYamlTreeCustom(cmd, dir, emptyStr, identity);
 }
 
 public static error GenYamlTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Func<@string, @string> filePrepender, Func<@string, @string> linkHandler) {
@@ -63,7 +63,7 @@ public static error GenYamlTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
                 continue;
             }
             {
-                var errΔ1 = GenYamlTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != default!) {
+                var errΔ1 = GenYamlTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
                     return errΔ1;
                 }
             }
@@ -72,30 +72,30 @@ public static error GenYamlTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
         @string basename = strings.ReplaceAll(cmd.CommandPath(), " ", "_") + ".yaml"u8;
         @string filename = filepath.Join(dir, basename);
         var (f, err) = os.Create(filename);
-        if (err != default!) {
+        if (err != nil) {
             return err;
         }
         var fʗ1 = f;
         defer(() => fʗ1.Close(), ref ᒐ);
 
         {
-            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != default!) {
+            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
                 return errΔ2;
             }
         }
         {
-            var errΔ3 = GenYamlCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != default!) {
+            var errΔ3 = GenYamlCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
                 return errΔ3;
             }
         }
-        return default!;
+        return default;
     }
-    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default!; }
+    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default; }
     finally { ᒐ.Run(); }
 }
 
-public static error GenYaml(ж<cobra.Command> Ꮡcmd, io.Writer w) {
-    return GenYamlCustom(Ꮡcmd, w, (@string s) => s);
+public static error GenYaml(ж<cobra.Command> cmd, io.Writer w) {
+    return GenYamlCustom(cmd, w, (@string s) => s);
 }
 
 public static error GenYamlCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@string, @string> linkHandler) {
@@ -104,8 +104,7 @@ public static error GenYamlCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
     Ꮡcmd.InitDefaultHelpCmd();
     Ꮡcmd.InitDefaultHelpFlag();
 
-    ref var yamlDoc = ref heap<cmdDoc>(out var ᏑyamlDoc);
-    yamlDoc = new cmdDoc(nil);
+    ref var yamlDoc = ref heap<cmdDoc>(new cmdDoc(), out var ᏑyamlDoc);
     yamlDoc.Name = cmd.CommandPath();
 
     yamlDoc.Synopsis = forceMultiLine(cmd.Short);
@@ -129,10 +128,10 @@ public static error GenYamlCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
     }
 
     if (hasSeeAlso(Ꮡcmd)) {
-        var result = new @string[]{}.slice();
+        var result = slice<@string>([]);
         if (cmd.HasParent()) {
             var parent = cmd.Parent();
-            result = append(result, parent.CommandPath() + " - "u8 + (~parent).Short);
+            result = append(result, parent.CommandPath() + " - "u8 + parent.Short);
         }
         var children = cmd.Commands();
         sort.Sort((byName)children);
@@ -140,23 +139,23 @@ public static error GenYamlCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
             if (!child.IsAvailableCommand() || child.IsAdditionalHelpTopicCommand()) {
                 continue;
             }
-            result = append(result, child.CommandPath() + " - "u8 + (~child).Short);
+            result = append(result, child.CommandPath() + " - "u8 + child.Short);
         }
         yamlDoc.SeeAlso = result;
     }
 
     var (final, err) = yaml.Marshal(ᏑyamlDoc);
-    if (err != default!) {
+    if (err != nil) {
         fmt.Println(err);
         os.Exit(1);
     }
 
     {
-        var (_, errΔ1) = w.Write(final); if (errΔ1 != default!) {
+        var (_, errΔ1) = w.Write(final); if (errΔ1 != nil) {
             return errΔ1;
         }
     }
-    return default!;
+    return default;
 }
 
 internal static slice<cmdOption> genFlagResult(ж<pflag.FlagSet> Ꮡflags) {
@@ -165,19 +164,19 @@ internal static slice<cmdOption> genFlagResult(ж<pflag.FlagSet> Ꮡflags) {
     ref var result = ref heap<slice<cmdOption>>(out var Ꮡresult);
 
     flags.VisitAll((ж<pflag.Flag> flag) => {
-        if (len((~flag).ShorthandDeprecated) == 0 && len((~flag).Shorthand) > 0){
+        if (len(flag.ShorthandDeprecated) == 0 && len(flag.Shorthand) > 0) {
             var opt = new cmdOption(
-                (~flag).Name,
-                (~flag).Shorthand,
-                (~flag).DefValue,
-                forceMultiLine((~flag).Usage)
+                flag.Name,
+                flag.Shorthand,
+                flag.DefValue,
+                forceMultiLine(flag.Usage)
             );
             Ꮡresult.ValueSlot = append(Ꮡresult.ValueSlot, opt);
         } else {
             var opt = new cmdOption(
-                Name: (~flag).Name,
-                DefaultValue: forceMultiLine((~flag).DefValue),
-                Usage: forceMultiLine((~flag).Usage)
+                Name: flag.Name,
+                DefaultValue: forceMultiLine(flag.DefValue),
+                Usage: forceMultiLine(flag.Usage)
             );
             Ꮡresult.ValueSlot = append(Ꮡresult.ValueSlot, opt);
         }

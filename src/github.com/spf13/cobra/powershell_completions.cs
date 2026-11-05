@@ -329,7 +329,7 @@ internal static error genPowerShellCompletionFile(this ж<Command> Ꮡc, @string
         ref var c = ref Ꮡc.DerefOrNull();
 
         var (outFile, err) = os.Create(filename);
-        if (err != default!) {
+        if (err != nil) {
             return err;
         }
         var outFileʗ1 = outFile;
@@ -337,7 +337,7 @@ internal static error genPowerShellCompletionFile(this ж<Command> Ꮡc, @string
 
         return c.genPowerShellCompletion(new os.FileжWriter(outFile), includeDesc);
     }
-    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default!; }
+    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default; }
     finally { ᒐ.Run(); }
 }
 

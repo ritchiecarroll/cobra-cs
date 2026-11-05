@@ -47,22 +47,28 @@ internal const bool defaultCommandSorting = true;
 internal const bool defaultCaseInsensitive = false;
 internal const bool defaultTraverseRunHooks = false;
 
-public static bool EnablePrefixMatching = defaultPrefixMatching;
+public static readonly ж<bool> ᏑEnablePrefixMatching = new StaticBox<bool>(defaultPrefixMatching);
+public static ref bool EnablePrefixMatching => ref ((StaticBox<bool>)ᏑEnablePrefixMatching).ValueSlot;
 
-public static bool EnableCommandSorting = defaultCommandSorting;
+public static readonly ж<bool> ᏑEnableCommandSorting = new StaticBox<bool>(defaultCommandSorting);
+public static ref bool EnableCommandSorting => ref ((StaticBox<bool>)ᏑEnableCommandSorting).ValueSlot;
 
-public static bool EnableCaseInsensitive = defaultCaseInsensitive;
+public static readonly ж<bool> ᏑEnableCaseInsensitive = new StaticBox<bool>(defaultCaseInsensitive);
+public static ref bool EnableCaseInsensitive => ref ((StaticBox<bool>)ᏑEnableCaseInsensitive).ValueSlot;
 
-public static bool EnableTraverseRunHooks = defaultTraverseRunHooks;
+public static readonly ж<bool> ᏑEnableTraverseRunHooks = new StaticBox<bool>(defaultTraverseRunHooks);
+public static ref bool EnableTraverseRunHooks => ref ((StaticBox<bool>)ᏑEnableTraverseRunHooks).ValueSlot;
 
-public static @string MousetrapHelpText = """
+public static readonly ж<@string> ᏑMousetrapHelpText = new StaticBox<@string>("""
 This is a command line tool.
 
 You need to open cmd.exe and run it from there.
 
-"""u8.Raw();
+"""u8.Raw());
+public static ref @string MousetrapHelpText => ref ((StaticBox<@string>)ᏑMousetrapHelpText).ValueSlot;
 
-public static time.Duration MousetrapDisplayDuration = (time.Duration)(5000000000L);
+public static readonly ж<time.Duration> ᏑMousetrapDisplayDuration = new StaticBox<time.Duration>((time.Duration)(5000000000L));
+public static ref time.Duration MousetrapDisplayDuration => ref ((StaticBox<time.Duration>)ᏑMousetrapDisplayDuration).ValueSlot;
 
 public static void AddTemplateFunc(@string name, any tmplFunc) {
     templateFuncs[name] = tmplFunc;
@@ -87,33 +93,39 @@ public static void OnFinalize(params ꓸꓸꓸAction yʗp) {
 }
 
 public static bool Gt(any a, any b) {
-    int64 left = default!;
-    int64 right = default!;
+    int64 left = default;
+    int64 right = default;
     var av = reflect.ValueOf(a);
 
-    var exprᴛ1 = av.Kind();
-    if (exprᴛ1 == reflect.Array || exprᴛ1 == reflect.Chan || exprᴛ1 == reflect.Map || exprᴛ1 == reflect.ΔSlice) {
+    switch (av.Kind()) {
+    case var ᴛ when ᴛ == reflect.Array || ᴛ == reflect.Chan || ᴛ == reflect.Map || ᴛ == reflect.ΔSlice: {
         left = (int64)av.Len();
+        break;
     }
-    else if (exprᴛ1 == reflect.ΔInt || exprᴛ1 == reflect.Int8 || exprᴛ1 == reflect.Int16 || exprᴛ1 == reflect.Int32 || exprᴛ1 == reflect.Int64) {
+    case var ᴛ when ᴛ == reflect.ΔInt || ᴛ == reflect.Int8 || ᴛ == reflect.Int16 || ᴛ == reflect.Int32 || ᴛ == reflect.Int64: {
         left = av.Int();
+        break;
     }
-    else if (exprᴛ1 == reflect.ΔString) {
+    case var ᴛ when ᴛ == reflect.ΔString: {
         (left, _) = strconv.ParseInt(av.String(), 10, 64);
-    }
+        break;
+    }}
 
     var bv = reflect.ValueOf(b);
 
-    var exprᴛ2 = bv.Kind();
-    if (exprᴛ2 == reflect.Array || exprᴛ2 == reflect.Chan || exprᴛ2 == reflect.Map || exprᴛ2 == reflect.ΔSlice) {
+    switch (bv.Kind()) {
+    case var ᴛ when ᴛ == reflect.Array || ᴛ == reflect.Chan || ᴛ == reflect.Map || ᴛ == reflect.ΔSlice: {
         right = (int64)bv.Len();
+        break;
     }
-    else if (exprᴛ2 == reflect.ΔInt || exprᴛ2 == reflect.Int8 || exprᴛ2 == reflect.Int16 || exprᴛ2 == reflect.Int32 || exprᴛ2 == reflect.Int64) {
+    case var ᴛ when ᴛ == reflect.ΔInt || ᴛ == reflect.Int8 || ᴛ == reflect.Int16 || ᴛ == reflect.Int32 || ᴛ == reflect.Int64: {
         right = bv.Int();
+        break;
     }
-    else if (exprᴛ2 == reflect.ΔString) {
+    case var ᴛ when ᴛ == reflect.ΔString: {
         (right, _) = strconv.ParseInt(bv.String(), 10, 64);
-    }
+        break;
+    }}
 
     return left > right;
 }
@@ -122,16 +134,17 @@ public static bool Eq(any a, any b) {
     var av = reflect.ValueOf(a);
     var bv = reflect.ValueOf(b);
 
-    var exprᴛ1 = av.Kind();
-    if (exprᴛ1 == reflect.Array || exprᴛ1 == reflect.Chan || exprᴛ1 == reflect.Map || exprᴛ1 == reflect.ΔSlice) {
+    switch (av.Kind()) {
+    case var ᴛ when ᴛ == reflect.Array || ᴛ == reflect.Chan || ᴛ == reflect.Map || ᴛ == reflect.ΔSlice: {
         throw panic("Eq called on unsupported type");
+        break;
     }
-    else if (exprᴛ1 == reflect.ΔInt || exprᴛ1 == reflect.Int8 || exprᴛ1 == reflect.Int16 || exprᴛ1 == reflect.Int32 || exprᴛ1 == reflect.Int64) {
+    case var ᴛ when ᴛ == reflect.ΔInt || ᴛ == reflect.Int8 || ᴛ == reflect.Int16 || ᴛ == reflect.Int32 || ᴛ == reflect.Int64: {
         return av.Int() == bv.Int();
     }
-    if (exprᴛ1 == reflect.ΔString) {
+    case var ᴛ when ᴛ == reflect.ΔString: {
         return av.String() == bv.String();
-    }
+    }}
 
     return false;
 }
@@ -180,7 +193,7 @@ internal static nint ld(@string s, @string t, bool ignoreCase) {
     }
     for (nint j = 1; j <= len(t); j++) {
         for (nint i = 1; i <= len(s); i++) {
-            if (s[i - 1] == t[j - 1]){
+            if (s[i - 1] == t[j - 1]) {
                 d[i][j] = d[i - 1][j - 1];
             } else {
                 nint min = d[i - 1][j];
@@ -207,7 +220,7 @@ internal static bool stringInSlice(@string a, slice<@string> list) {
 }
 
 public static void CheckErr(any msg) {
-    if (msg != default!) {
+    if (msg != nil) {
         fmt.Fprintln(new os.FileжWriter(os.Stderr), "Error:", msg);
         os.Exit(1);
     }

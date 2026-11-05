@@ -41,13 +41,13 @@ public static error GenZshCompletionNoDesc(this ref Command c, io.Writer w) {
 public static error MarkZshCompPositionalArgumentFile(this ref Command c, nint argPosition, params ꓸꓸꓸstring patternsʗp) {
     var patterns = patternsʗp.sslice();
 
-    return default!;
+    return default;
 }
 
 public static error MarkZshCompPositionalArgumentWords(this ref Command c, nint argPosition, params ꓸꓸꓸstring wordsʗp) {
     var words = wordsʗp.sslice();
 
-    return default!;
+    return default;
 }
 
 internal static error genZshCompletionFile(this ж<Command> Ꮡc, @string filename, bool includeDesc) {
@@ -56,7 +56,7 @@ internal static error genZshCompletionFile(this ж<Command> Ꮡc, @string filena
         ref var c = ref Ꮡc.DerefOrNull();
 
         var (outFile, err) = os.Create(filename);
-        if (err != default!) {
+        if (err != nil) {
             return err;
         }
         var outFileʗ1 = outFile;
@@ -64,7 +64,7 @@ internal static error genZshCompletionFile(this ж<Command> Ꮡc, @string filena
 
         return c.genZshCompletion(new os.FileжWriter(outFile), includeDesc);
     }
-    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default!; }
+    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default; }
     finally { ᒐ.Run(); }
 }
 

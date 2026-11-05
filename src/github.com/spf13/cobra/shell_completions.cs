@@ -28,8 +28,8 @@ public static error MarkPersistentFlagRequired(this ref Command c, @string name)
     return MarkFlagRequired(c.PersistentFlags(), name);
 }
 
-public static error MarkFlagRequired(ж<pflag.FlagSet> Ꮡflags, @string name) {
-    return Ꮡflags.SetAnnotation(name, BashCompOneRequiredFlag, new @string[]{"true"}.slice());
+public static error MarkFlagRequired(ж<pflag.FlagSet> flags, @string name) {
+    return flags.SetAnnotation(name, BashCompOneRequiredFlag, slice<@string>(["true"]));
 }
 
 public static error MarkFlagFilename(this ref Command c, @string name, params ꓸꓸꓸstring extensionsʗp) {
@@ -48,14 +48,14 @@ public static error MarkPersistentFlagFilename(this ref Command c, @string name,
     return MarkFlagFilename(c.PersistentFlags(), name, extensions.ꓸꓸꓸ);
 }
 
-public static error MarkFlagFilename(ж<pflag.FlagSet> Ꮡflags, @string name, params ꓸꓸꓸstring extensionsʗp) {
+public static error MarkFlagFilename(ж<pflag.FlagSet> flags, @string name, params ꓸꓸꓸstring extensionsʗp) {
     var extensions = extensionsʗp.slice();
 
-    return Ꮡflags.SetAnnotation(name, BashCompFilenameExt, extensions);
+    return flags.SetAnnotation(name, BashCompFilenameExt, extensions);
 }
 
-public static error MarkFlagCustom(ж<pflag.FlagSet> Ꮡflags, @string name, @string f) {
-    return Ꮡflags.SetAnnotation(name, BashCompCustom, new @string[]{f}.slice());
+public static error MarkFlagCustom(ж<pflag.FlagSet> flags, @string name, @string f) {
+    return flags.SetAnnotation(name, BashCompCustom, slice<@string>([f]));
 }
 
 public static error MarkFlagDirname(this ref Command c, @string name) {
@@ -66,8 +66,8 @@ public static error MarkPersistentFlagDirname(this ref Command c, @string name) 
     return MarkFlagDirname(c.PersistentFlags(), name);
 }
 
-public static error MarkFlagDirname(ж<pflag.FlagSet> Ꮡflags, @string name) {
-    return Ꮡflags.SetAnnotation(name, BashCompSubdirsInDir, new @string[]{}.slice());
+public static error MarkFlagDirname(ж<pflag.FlagSet> flags, @string name) {
+    return flags.SetAnnotation(name, BashCompSubdirsInDir, slice<@string>([]));
 }
 
 } // end cobra_package

@@ -474,7 +474,7 @@ public static error GenBashCompletionFileV2(this ж<Command> Ꮡc, @string filen
         ref var c = ref Ꮡc.DerefOrNull();
 
         var (outFile, err) = os.Create(filename);
-        if (err != default!) {
+        if (err != nil) {
             return err;
         }
         var outFileʗ1 = outFile;
@@ -482,7 +482,7 @@ public static error GenBashCompletionFileV2(this ж<Command> Ꮡc, @string filen
 
         return c.GenBashCompletionV2(new os.FileжWriter(outFile), includeDesc);
     }
-    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default!; }
+    catch (Exception ᒐex) when (GoFrame.IsPanic(ᒐex, out PanicException? ᒐp)) { GoFrame.Capture(ᒐp); return default; }
     finally { ᒐ.Run(); }
 }
 
