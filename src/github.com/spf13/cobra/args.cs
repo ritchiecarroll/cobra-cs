@@ -49,10 +49,10 @@ public static error OnlyValidArgs(ж<Command> Ꮡcmd, slice<@string> args) {
 
     if (len(cmd.ValidArgs) > 0) {
         var validArgs = new slice<@string>(0, len(cmd.ValidArgs));
-        foreach (var (_, v) in cmd.ValidArgs) {
+        foreach (var (_, v) in range(cmd.ValidArgs)) {
             validArgs = append(validArgsᴷ, validArgs, strings.SplitN(v, "\t", 2)[0]);
         }
-        foreach (var (_, v) in args) {
+        foreach (var (_, v) in range(args)) {
             if (!stringInSlice(v, validArgs)) {
                 return fmt.Errorf("invalid argument %q for %q%s"u8, v, cmd.CommandPath(), cmd.findSuggestions(args[0]));
             }
@@ -106,11 +106,9 @@ public static Func<ж<Command>, slice<@string>, error> MatchAll(params Span<Func
 
     var pargsʗ1 = pargs;
     return error (ж<Command> cmd, slice<@string> args) => {
-        foreach (var (_, parg) in pargsʗ1) {
-            {
-                var err = parg(cmd, args); if (err != nil) {
-                    return err;
-                }
+        foreach (var (_, parg) in range(pargsʗ1)) {
+            var err = parg(cmd, args); if (err != nil) {
+                return err;
             }
         }
         return default;

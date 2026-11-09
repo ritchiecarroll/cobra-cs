@@ -39,7 +39,6 @@ partial class cobra_package {
 }); }
 
 internal static slice<Action> initializers;
-
 internal static slice<Action> finalizers;
 
 internal const bool defaultPrefixMatching = false;
@@ -184,11 +183,11 @@ internal static nint ld(@string s, @string t, bool ignoreCase) {
         t = strings.ToLower(t);
     }
     var d = new slice<slice<nint>>(len(s) + 1);
-    foreach (var i in range(d)) {
+    foreach (var i in range(len(d))) {
         d[i] = new slice<nint>(len(t) + 1);
         d[i][0] = i;
     }
-    foreach (var j in range(d[0])) {
+    foreach (var j in range(len(d[0]))) {
         d[0][j] = j;
     }
     for (nint j = 1; j <= len(t); j++) {
@@ -211,7 +210,7 @@ internal static nint ld(@string s, @string t, bool ignoreCase) {
 }
 
 internal static bool stringInSlice(@string a, slice<@string> list) {
-    foreach (var (_, b) in list) {
+    foreach (var (_, b) in range(list)) {
         if (b == a) {
             return true;
         }

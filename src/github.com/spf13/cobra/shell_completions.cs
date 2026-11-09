@@ -29,7 +29,7 @@ public static error MarkPersistentFlagRequired(this ref Command c, @string name)
 }
 
 public static error MarkFlagRequired(ж<pflag.FlagSet> flags, @string name) {
-    return flags.SetAnnotation(name, BashCompOneRequiredFlag, slice<@string>(["true"]));
+    return flags.SetAnnotation(name, BashCompOneRequiredFlag, ["true"]);
 }
 
 public static error MarkFlagFilename(this ref Command c, @string name, params ꓸꓸꓸstring extensionsʗp) {
@@ -55,7 +55,7 @@ public static error MarkFlagFilename(ж<pflag.FlagSet> flags, @string name, para
 }
 
 public static error MarkFlagCustom(ж<pflag.FlagSet> flags, @string name, @string f) {
-    return flags.SetAnnotation(name, BashCompCustom, slice<@string>([f]));
+    return flags.SetAnnotation(name, BashCompCustom, [f]);
 }
 
 public static error MarkFlagDirname(this ref Command c, @string name) {
@@ -67,7 +67,7 @@ public static error MarkPersistentFlagDirname(this ref Command c, @string name) 
 }
 
 public static error MarkFlagDirname(ж<pflag.FlagSet> flags, @string name) {
-    return flags.SetAnnotation(name, BashCompSubdirsInDir, slice<@string>([]));
+    return flags.SetAnnotation(name, BashCompSubdirsInDir, []);
 }
 
 } // end cobra_package

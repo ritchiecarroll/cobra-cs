@@ -26,7 +26,7 @@ internal static bool hasSeeAlso(ж<cobra.Command> Ꮡcmd) {
     if (cmd.HasParent()) {
         return true;
     }
-    foreach (var (_, c) in cmd.Commands()) {
+    foreach (var (_, c) in range(cmd.Commands())) {
         if (!c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand()) {
             continue;
         }
@@ -44,16 +44,8 @@ internal static @string forceMultiLine(@string s) {
 
 partial struct byName /*[]ж<global::go.github.com.spf13.cobra_package.Command>*/;
 
-internal static nint Len(this byName s) {
-    return len(s);
-}
-
-internal static void Swap(this byName s, nint i, nint j) {
-    (s[i], s[j]) = (s[j], s[i]);
-}
-
-internal static bool Less(this byName s, nint i, nint j) {
-    return s[i].Name() < s[j].Name();
-}
+internal static nint Len(this byName s) { return len(s); }
+internal static void Swap(this byName s, nint i, nint j) { (s[i], s[j]) = (s[j], s[i]); }
+internal static bool Less(this byName s, nint i, nint j) { return s[i].Name() < s[j].Name(); }
 
 } // end doc_package

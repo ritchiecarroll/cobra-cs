@@ -208,7 +208,7 @@ public static void SetGlobalNormalizationFunc(this ref Command c, Func<ж<flag.F
     c.PersistentFlags().SetNormalizeFunc(n);
     c.globNormFunc = n;
 
-    foreach (var (_, command) in c.commands) {
+    foreach (var (_, command) in range(c.commands)) {
         command.SetGlobalNormalizationFunc(n);
     }
 }
@@ -326,7 +326,7 @@ internal static Func<io.Writer, any, error> getHelpTemplateFunc(this ref Command
 }
 
 public static error Help(this ж<Command> Ꮡc) {
-    Ꮡc.HelpFunc()(Ꮡc, slice<@string>([]));
+    Ꮡc.HelpFunc()(Ꮡc, []);
     return default;
 }
 
@@ -580,12 +580,10 @@ internal static @string findSuggestions(this ref Command c, @string arg) {
         c.SuggestionsMinimumDistance = 2;
     }
     ref var sb = ref heap(new strings.Builder(), out var Ꮡsb);
-    {
-        var suggestions = c.SuggestionsFor(arg); if (len(suggestions) > 0) {
-            Ꮡsb.WriteString("\n\nDid you mean this?\n");
-            foreach (var (_, s) in suggestions) {
-                (_, _) = fmt.Fprintf(new strings_BuilderжWriter(Ꮡsb), "\t%v\n"u8, s);
-            }
+    var suggestions = c.SuggestionsFor(arg); if (len(suggestions) > 0) {
+        Ꮡsb.WriteString("\n\nDid you mean this?\n");
+        foreach (var (_, s) in range(suggestions)) {
+            (_, _) = fmt.Fprintf(new strings_BuilderжWriter(Ꮡsb), "\t%v\n"u8, s);
         }
     }
     return sb.String();
@@ -595,7 +593,7 @@ internal static ж<Command> findNext(this ref Command c, @string next) {
     var matchesᴷ = new stackAppend<ж<Command>>();
 
     var matches = new slice<ж<Command>>(0);
-    foreach (var (_, cmd) in c.commands) {
+    foreach (var (_, cmd) in range(c.commands)) {
         if (commandNameMatches(cmd.Name(), next) || cmd.HasAlias(next)) {
             cmd.commandCalledAs.name = next;
             return cmd;
@@ -619,7 +617,7 @@ public static (ж<Command>, slice<@string>, error) Traverse(this ж<Command> Ꮡ
     var flags = slice<@string>([]);
     var inFlag = false;
 
-    foreach (var (i, arg) in args) {
+    foreach (var (i, arg) in range(args)) {
         switch (ᐧ) {
         case {} when strings.HasPrefix(arg, "--") && !strings.Contains(arg, "="): {
             inFlag = !hasNoOptDefVal(arg[2..], c.Flags());
@@ -650,10 +648,8 @@ public static (ж<Command>, slice<@string>, error) Traverse(this ж<Command> Ꮡ
             return (Ꮡc, args, default);
         }
 
-        {
-            var err = Ꮡc.ParseFlags(flags); if (err != nil) {
-                return (default, args, err);
-            }
+        var err = Ꮡc.ParseFlags(flags); if (err != nil) {
+            return (default, args, err);
         }
         return cmd.Traverse(args.slice(i + 1));
     }
@@ -662,7 +658,7 @@ public static (ж<Command>, slice<@string>, error) Traverse(this ж<Command> Ꮡ
 
 public static slice<@string> SuggestionsFor(this ref Command c, @string typedName) {
     var suggestions = slice<@string>([]);
-    foreach (var (_, cmd) in c.commands) {
+    foreach (var (_, cmd) in range(c.commands)) {
         if (cmd.IsAvailableCommand()) {
             nint levenshteinDistance = ld(typedName, cmd.Name(), true);
             var suggestByLevenshtein = levenshteinDistance <= c.SuggestionsMinimumDistance;
@@ -670,7 +666,7 @@ public static slice<@string> SuggestionsFor(this ref Command c, @string typedNam
             if (suggestByLevenshtein || suggestByPrefix) {
                 suggestions = append(suggestions, cmd.Name());
             }
-            foreach (var (_, explicitSuggestion) in cmd.SuggestFor) {
+            foreach (var (_, explicitSuggestion) in range(cmd.SuggestFor)) {
                 if (strings.EqualFold(typedName, explicitSuggestion)) {
                     suggestions = append(suggestions, cmd.Name());
                 }
@@ -766,10 +762,8 @@ internal static error /*err*/ execute(this ж<Command> Ꮡc, slice<@string> a) {
             argWoFlags = a;
         }
 
-        {
-            var errΔ3 = Ꮡc.ValidateArgs(argWoFlags); if (errΔ3 != nil) {
-                err = errΔ3; goto ᒐdone;
-            }
+        var errΔ3 = Ꮡc.ValidateArgs(argWoFlags); if (errΔ3 != nil) {
+            err = errΔ3; goto ᒐdone;
         }
 
         var parents = new slice<ж<Command>>(0, 5);
@@ -780,12 +774,10 @@ internal static error /*err*/ execute(this ж<Command> Ꮡc, slice<@string> a) {
                 parents = append(parentsᴷ, parents, p);
             }
         }
-        foreach (var (_, p) in parents) {
+        foreach (var (_, p) in range(parents)) {
             if (p.PersistentPreRunE != nil) {
-                {
-                    var errΔ4 = p.PersistentPreRunE(Ꮡc, argWoFlags); if (errΔ4 != nil) {
-                        err = errΔ4; goto ᒐdone;
-                    }
+                var errΔ4 = p.PersistentPreRunE(Ꮡc, argWoFlags); if (errΔ4 != nil) {
+                    err = errΔ4; goto ᒐdone;
                 }
                 if (!EnableTraverseRunHooks) {
                     break;
@@ -798,50 +790,38 @@ internal static error /*err*/ execute(this ж<Command> Ꮡc, slice<@string> a) {
             }
         }
         if (c.PreRunE != nil) {
-            {
-                var errΔ5 = c.PreRunE(Ꮡc, argWoFlags); if (errΔ5 != nil) {
-                    err = errΔ5; goto ᒐdone;
-                }
+            var errΔ5 = c.PreRunE(Ꮡc, argWoFlags); if (errΔ5 != nil) {
+                err = errΔ5; goto ᒐdone;
             }
         } else if (c.PreRun != nil) {
             c.PreRun(Ꮡc, argWoFlags);
         }
 
-        {
-            var errΔ6 = c.ValidateRequiredFlags(); if (errΔ6 != nil) {
-                err = errΔ6; goto ᒐdone;
-            }
+        var errΔ6 = c.ValidateRequiredFlags(); if (errΔ6 != nil) {
+            err = errΔ6; goto ᒐdone;
         }
-        {
-            var errΔ7 = c.ValidateFlagGroups(); if (errΔ7 != nil) {
-                err = errΔ7; goto ᒐdone;
-            }
+        var errΔ7 = c.ValidateFlagGroups(); if (errΔ7 != nil) {
+            err = errΔ7; goto ᒐdone;
         }
 
         if (c.RunE != nil) {
-            {
-                var errΔ8 = c.RunE(Ꮡc, argWoFlags); if (errΔ8 != nil) {
-                    err = errΔ8; goto ᒐdone;
-                }
+            var errΔ8 = c.RunE(Ꮡc, argWoFlags); if (errΔ8 != nil) {
+                err = errΔ8; goto ᒐdone;
             }
         } else {
             c.Run(Ꮡc, argWoFlags);
         }
         if (c.PostRunE != nil) {
-            {
-                var errΔ9 = c.PostRunE(Ꮡc, argWoFlags); if (errΔ9 != nil) {
-                    err = errΔ9; goto ᒐdone;
-                }
+            var errΔ9 = c.PostRunE(Ꮡc, argWoFlags); if (errΔ9 != nil) {
+                err = errΔ9; goto ᒐdone;
             }
         } else if (c.PostRun != nil) {
             c.PostRun(Ꮡc, argWoFlags);
         }
         for (var p = Ꮡc; p != nil; p = p.Parent()) {
             if (p.PersistentPostRunE != nil) {
-                {
-                    var errΔ10 = p.PersistentPostRunE(Ꮡc, argWoFlags); if (errΔ10 != nil) {
-                        err = errΔ10; goto ᒐdone;
-                    }
+                var errΔ10 = p.PersistentPostRunE(Ꮡc, argWoFlags); if (errΔ10 != nil) {
+                    err = errΔ10; goto ᒐdone;
                 }
                 if (!EnableTraverseRunHooks) {
                     break;
@@ -862,13 +842,13 @@ internal static error /*err*/ execute(this ж<Command> Ꮡc, slice<@string> a) {
 }
 
 internal static void preRun(this ref Command c) {
-    foreach (var (_, x) in initializers) {
+    foreach (var (_, x) in range(initializers)) {
         x();
     }
 }
 
 internal static void postRun(this ref Command c) {
-    foreach (var (_, x) in finalizers) {
+    foreach (var (_, x) in range(finalizers)) {
         x();
     }
 }
@@ -1000,7 +980,7 @@ public static error ValidateRequiredFlags(this ref Command c) {
 }
 
 internal static void checkCommandGroups(this ref Command c) {
-    foreach (var (_, sub) in c.commands) {
+    foreach (var (_, sub) in range(c.commands)) {
         if (sub.GroupID != ""u8 && !c.ContainsGroup(sub.GroupID)) {
             throw panic(fmt.Sprintf("group id '%s' is not defined for subcommand '%s'"u8, sub.GroupID, sub.CommandPath()));
         }
@@ -1022,7 +1002,7 @@ public static void InitDefaultHelpFlag(this ж<Command> Ꮡc) {
             usage += name;
         }
         c.Flags().BoolP(helpFlagName, "h", false, usage);
-        _ = c.Flags().SetAnnotation(helpFlagName, FlagSetByCobraAnnotation, slice<@string>(["true"]));
+        _ = c.Flags().SetAnnotation(helpFlagName, FlagSetByCobraAnnotation, ["true"]);
     }
 }
 
@@ -1046,7 +1026,7 @@ public static void InitDefaultVersionFlag(this ж<Command> Ꮡc) {
         } else {
             c.Flags().Bool("version", false, usage);
         }
-        _ = c.Flags().SetAnnotation("version", FlagSetByCobraAnnotation, slice<@string>(["true"]));
+        _ = c.Flags().SetAnnotation("version", FlagSetByCobraAnnotation, ["true"]);
     }
 }
 
@@ -1075,7 +1055,7 @@ Simply type
                 if (cmd == nil) {
                     cmd = cΔ1.Root();
                 }
-                foreach (var (_, subCmd) in cmd.Commands()) {
+                foreach (var (_, subCmd) in range(cmd.Commands())) {
                     if (subCmd.IsAvailableCommand() || subCmd == cmd.helpCommand) {
                         if (strings.HasPrefix(subCmd.Name(), toComplete)) {
                             completions = append(completionsᴷ, completions, CompletionWithDesc(subCmd.Name(), subCmd.Short));
@@ -1116,17 +1096,9 @@ public static void ResetCommands(this ref Command c) {
 
 partial struct commandSorterByName /*[]ж<Command>*/;
 
-internal static nint Len(this commandSorterByName c) {
-    return len(c);
-}
-
-internal static void Swap(this commandSorterByName c, nint i, nint j) {
-    (c[i], c[j]) = (c[j], c[i]);
-}
-
-internal static bool Less(this commandSorterByName c, nint i, nint j) {
-    return c[i].Name() < c[j].Name();
-}
+internal static nint Len(this commandSorterByName c) { return len(c); }
+internal static void Swap(this commandSorterByName c, nint i, nint j) { (c[i], c[j]) = (c[j], c[i]); }
+internal static bool Less(this commandSorterByName c, nint i, nint j) { return c[i].Name() < c[j].Name(); }
 
 public static slice<ж<Command>> Commands(this ref Command c) {
     if (EnableCommandSorting && !c.commandsAreSorted) {
@@ -1140,7 +1112,7 @@ public static void AddCommand(this ж<Command> Ꮡc, params ꓸꓸꓸжCommand c
     var cmds = cmdsʗp.sslice();
     ref var c = ref Ꮡc.DerefOrNull();
 
-    foreach (var (i, x) in cmds) {
+    foreach (var (i, x) in range(cmds)) {
         if (cmds[i] == Ꮡc) {
             throw panic("Command can't be a child of itself");
         }
@@ -1170,7 +1142,7 @@ public static slice<ж<Group>> Groups(this ref Command c) {
 }
 
 public static bool AllChildCommandsHaveGroup(this ref Command c) {
-    foreach (var (_, sub) in c.commands) {
+    foreach (var (_, sub) in range(c.commands)) {
         if ((sub.IsAvailableCommand() || sub == c.helpCommand) && sub.GroupID == ""u8) {
             return false;
         }
@@ -1179,7 +1151,7 @@ public static bool AllChildCommandsHaveGroup(this ref Command c) {
 }
 
 public static bool ContainsGroup(this ref Command c, @string groupID) {
-    foreach (var (_, x) in c.commandgroups) {
+    foreach (var (_, x) in range(c.commandgroups)) {
         if (x.ID == groupID) {
             return true;
         }
@@ -1199,8 +1171,8 @@ public static void RemoveCommand(this ref Command c, params ꓸꓸꓸжCommand c
 
     var commands = slice<ж<Command>>([]);
 main:
-    foreach (var (_, command) in c.commands) {
-        foreach (var (_, cmd) in cmds) {
+    foreach (var (_, command) in range(c.commands)) {
+        foreach (var (_, cmd) in range(cmds)) {
             if (command == cmd) {
                 command.parent = default;
                 goto continue_main;
@@ -1215,7 +1187,7 @@ break_main:;
     c.commandsMaxUseLen = 0;
     c.commandsMaxCommandPathLen = 0;
     c.commandsMaxNameLen = 0;
-    foreach (var (_, command) in c.commands) {
+    foreach (var (_, command) in range(c.commands)) {
         nint usageLen = len(command.Use);
         if (usageLen > c.commandsMaxUseLen) {
             c.commandsMaxUseLen = usageLen;
@@ -1275,10 +1247,8 @@ public static @string CommandPath(this ref Command c) {
 }
 
 public static @string DisplayName(this ref Command c) {
-    {
-        var (displayName, ok) = c.Annotations[CommandDisplayNameAnnotation, ꟷ]; if (ok) {
-            return displayName;
-        }
+    var (displayName, ok) = c.Annotations[CommandDisplayNameAnnotation, ꟷ]; if (ok) {
+        return displayName;
     }
     return c.Name();
 }
@@ -1335,7 +1305,7 @@ public static void DebugFlags(this ж<Command> Ꮡc) {
         }
         Ꮡc.Value.Println(x.flagErrorBuf.OrTypedNil());
         if (x.HasSubCommands()) {
-            foreach (var (_, y) in x.commands) {
+            foreach (var (_, y) in range(x.commands)) {
                 Ꮡdebugflags.ValueSlot(y);
             }
         }
@@ -1354,7 +1324,7 @@ public static @string Name(this ref Command c) {
 }
 
 public static bool HasAlias(this ref Command c, @string s) {
-    foreach (var (_, a) in c.Aliases) {
+    foreach (var (_, a) in range(c.Aliases)) {
         if (commandNameMatches(a, s)) {
             return true;
         }
@@ -1374,7 +1344,7 @@ internal static bool hasNameOrAliasPrefix(this ref Command c, @string prefix) {
         c.commandCalledAs.name = c.Name();
         return true;
     }
-    foreach (var (_, alias) in c.Aliases) {
+    foreach (var (_, alias) in range(c.Aliases)) {
         if (strings.HasPrefix(alias, prefix)) {
             c.commandCalledAs.name = alias;
             return true;
@@ -1422,7 +1392,7 @@ public static bool IsAdditionalHelpTopicCommand(this ref Command c) {
         return false;
     }
 
-    foreach (var (_, sub) in c.commands) {
+    foreach (var (_, sub) in range(c.commands)) {
         if (!sub.IsAdditionalHelpTopicCommand()) {
             return false;
         }
@@ -1432,7 +1402,7 @@ public static bool IsAdditionalHelpTopicCommand(this ref Command c) {
 }
 
 public static bool HasHelpSubCommands(this ref Command c) {
-    foreach (var (_, sub) in c.commands) {
+    foreach (var (_, sub) in range(c.commands)) {
         if (sub.IsAdditionalHelpTopicCommand()) {
             return true;
         }
@@ -1442,7 +1412,7 @@ public static bool HasHelpSubCommands(this ref Command c) {
 }
 
 public static bool HasAvailableSubCommands(this ref Command c) {
-    foreach (var (_, sub) in c.commands) {
+    foreach (var (_, sub) in range(c.commands)) {
         if (sub.IsAvailableCommand()) {
             return true;
         }
@@ -1751,15 +1721,15 @@ internal static error defaultUsageFunc(io.Writer w, any @in) {
         var cmds = c.Commands();
         if (len(c.Groups()) == 0) {
             fmt.Fprintf(w, "\n\nAvailable Commands:"u8);
-            foreach (var (_, subcmd) in cmds) {
+            foreach (var (_, subcmd) in range(cmds)) {
                 if (subcmd.IsAvailableCommand() || subcmd.Name() == helpCommandName) {
                     fmt.Fprintf(w, "\n  %s %s"u8, rpad(subcmd.Name(), subcmd.NamePadding()), subcmd.Short);
                 }
             }
         } else {
-            foreach (var (_, group) in c.Groups()) {
+            foreach (var (_, group) in range(c.Groups())) {
                 fmt.Fprintf(w, "\n\n%s"u8, group.Title);
-                foreach (var (_, subcmd) in cmds) {
+                foreach (var (_, subcmd) in range(cmds)) {
                     if (subcmd.GroupID == group.ID && (subcmd.IsAvailableCommand() || subcmd.Name() == helpCommandName)) {
                         fmt.Fprintf(w, "\n  %s %s"u8, rpad(subcmd.Name(), subcmd.NamePadding()), subcmd.Short);
                     }
@@ -1767,7 +1737,7 @@ internal static error defaultUsageFunc(io.Writer w, any @in) {
             }
             if (!c.AllChildCommandsHaveGroup()) {
                 fmt.Fprintf(w, "\n\nAdditional Commands:"u8);
-                foreach (var (_, subcmd) in cmds) {
+                foreach (var (_, subcmd) in range(cmds)) {
                     if (subcmd.GroupID == ""u8 && (subcmd.IsAvailableCommand() || subcmd.Name() == helpCommandName)) {
                         fmt.Fprintf(w, "\n  %s %s"u8, rpad(subcmd.Name(), subcmd.NamePadding()), subcmd.Short);
                     }
@@ -1785,7 +1755,7 @@ internal static error defaultUsageFunc(io.Writer w, any @in) {
     }
     if (c.HasHelpSubCommands()) {
         fmt.Fprintf(w, "\n\nAdditional help topics:"u8);
-        foreach (var (_, subcmd) in c.Commands()) {
+        foreach (var (_, subcmd) in range(c.Commands())) {
             if (subcmd.IsAdditionalHelpTopicCommand()) {
                 fmt.Fprintf(w, "\n  %s %s"u8, rpad(subcmd.CommandPath(), subcmd.CommandPathPadding()), subcmd.Short);
             }

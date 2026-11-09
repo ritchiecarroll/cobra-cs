@@ -15,7 +15,7 @@ This repository is not affiliated with or endorsed by The Cobra Authors, the mai
 ## NuGet
 
 Published as [`nugetgo.github.com.spf13.cobra`](https://www.nuget.org/packages/nugetgo.github.com.spf13.cobra) 1.10.2,
-rebuilt as 1.10.2.1 from this repository's tag `nuget-1.10.2.1`. A rebuild of the same Go version adds a fourth,
+rebuilt as 1.10.2.2 from this repository's tag `nuget-1.10.2.2`. A rebuild of the same Go version adds a fourth,
 revision part: `1.10.2.N`, where N counts up from 1. The package holds one assembly per operating system, the module's root package: its Windows
 build differs from the others, so `lib/net10.0/` carries the Windows assembly and `runtimes/<rid>/lib/net10.0/` carries
 each runtime's. It depends on `nugetgo.github.com.spf13.pflag` and `nugetgo.github.com.inconshreveable.mousetrap`.
@@ -44,17 +44,17 @@ The tree is the converter's own: the cobra project reaches pflag's as `../../../
 
 ```
 cd src/github.com/spf13/cobra
-dotnet build github.com.spf13.cobra.csproj -c Release -p:GoStdLibVersion=1.26.10.2
+dotnet build github.com.spf13.cobra.csproj -c Release -p:GoStdLibVersion=1.26.10.3
 ```
 
-The restore takes the `go.*` packages from nuget.org and builds pflag from `pkg/`. `-p:GoStdLibVersion=1.26.10.2`
+The restore takes the `go.*` packages from nuget.org and builds pflag from `pkg/`. `-p:GoStdLibVersion=1.26.10.3`
 pins the go2cs standard-library release the package was built against; without it the build takes the newest `1.26.*`.
 
 ## Provenance
 
-Converted with `go2cs -recurse=nuget -platforms linux/amd64` at go2cs commit `1ca308d85f`, the go.* 1.26.10.2
+Converted with `go2cs -recurse=nuget -platforms linux/amd64` at go2cs commit `e1761e9a17`, the go.* 1.26.10.3
 release record, whose runtime, source generators and nugetgo tools it carries unchanged, and built and packed with
-the .NET SDK 10.0.112. The module's Go tests were converted
+the .NET SDK 10.0.403. The module's Go tests were converted
 and compared at the same commit, run without root privileges: 405 matched, 0 disclosed in the root package. `doc`
 matched 19 of 19 and is not in the package. The package ships that report as `VALIDATION.md`.
 

@@ -100,10 +100,8 @@ public static error RegisterFlagCompletionFunc(this ж<Command> Ꮡc, @string fl
         flagCompletionMutex.Lock();
         defer(flagCompletionMutex.Unlock, ref ᒐ);
 
-        {
-            var (_, exists) = flagCompletionFunctions[flag, ꟷ]; if (exists) {
-                return fmt.Errorf("RegisterFlagCompletionFunc: flag '%s' already registered"u8, flagName);
-            }
+        var (_, exists) = flagCompletionFunctions[flag, ꟷ]; if (exists) {
+            return fmt.Errorf("RegisterFlagCompletionFunc: flag '%s' already registered"u8, flagName);
         }
         flagCompletionFunctions[flag] = f;
         return default;
@@ -167,7 +165,7 @@ internal static void initCompleteCmd(this ж<Command> Ꮡc, slice<@string> args)
 
     var completeCmd = Ꮡ(new Command(
         Use: fmt.Sprintf("%s [command-line]"u8, ShellCompRequestCmd),
-        Aliases: slice<@string>([ShellCompNoDescRequestCmd]),
+        Aliases: [ShellCompNoDescRequestCmd],
         DisableFlagsInUseLine: true,
         Hidden: true,
         DisableFlagParsing: true,
@@ -183,15 +181,13 @@ internal static void initCompleteCmd(this ж<Command> Ꮡc, slice<@string> args)
 
             var noDescriptions = cmd.CalledAs() == ShellCompNoDescRequestCmd;
             if (!noDescriptions) {
-                {
-                    var (doDescriptions, errΔ2) = strconv.ParseBool(getEnvConfig(cmd, configEnvVarSuffixDescriptions)); if (errΔ2 == nil) {
-                        noDescriptions = !doDescriptions;
-                    }
+                var (doDescriptions, errΔ2) = strconv.ParseBool(getEnvConfig(cmd, configEnvVarSuffixDescriptions)); if (errΔ2 == nil) {
+                    noDescriptions = !doDescriptions;
                 }
             }
             var noActiveHelp = GetActiveHelpConfig(finalCmd) == activeHelpGlobalDisable;
             var @out = finalCmd.OutOrStdout();
-            foreach (var (_, vᴛ1) in completions) {
+            foreach (var (_, vᴛ1) in range(completions)) {
                 var comp = vᴛ1;
 
                 if (noActiveHelp && strings.HasPrefix(comp, activeHelpMarker)) {
@@ -260,10 +256,8 @@ internal static (ж<Command>, slice<Completion>, ShellCompDirective, error) getC
     _ = finalCmd.ParseFlags(append(finalArgsᴷ, finalArgs, (@string)"--"));
     nint newArgCount = finalCmd.Flags().NArg();
 
-    {
-        err = finalCmd.ParseFlags(finalArgs); if (err != nil) {
-            return (finalCmd, slice<Completion>([]), ShellCompDirectiveDefault, fmt.Errorf("Error while parsing flags from args %v: %s"u8, finalArgs, err.Error()));
-        }
+    err = finalCmd.ParseFlags(finalArgs); if (err != nil) {
+        return (finalCmd, slice<Completion>([]), ShellCompDirectiveDefault, fmt.Errorf("Error while parsing flags from args %v: %s"u8, finalArgs, err.Error()));
     }
 
     nint realArgCount = finalCmd.Flags().NArg();
@@ -271,10 +265,8 @@ internal static (ж<Command>, slice<Completion>, ShellCompDirective, error) getC
         flagCompletion = false;
     }
     if (flagErr != nil) {
-        {
-            var (_, ok) = flagErr._<ж<flagCompError>>(ᐧ); if (!ok || flagCompletion) {
-                return (finalCmd, slice<Completion>([]), ShellCompDirectiveDefault, flagErr);
-            }
+        var (_, ok) = flagErr._<ж<flagCompError>>(ᐧ); if (!ok || flagCompletion) {
+            return (finalCmd, slice<Completion>([]), ShellCompDirectiveDefault, flagErr);
         }
     }
 
@@ -287,21 +279,17 @@ internal static (ж<Command>, slice<Completion>, ShellCompDirective, error) getC
     }
 
     if (flag != nil && flagCompletion) {
-        {
-            var (validExts, present) = flag.Annotations[BashCompFilenameExt, ꟷ]; if (present) {
-                if (len(validExts) != 0) {
-                    return (finalCmd, validExts, ShellCompDirectiveFilterFileExt, default);
-                }
+        if (flag.Annotations[BashCompFilenameExt, ꟷ] is (var validExts, true)) {
+            if (len(validExts) != 0) {
+                return (finalCmd, validExts, ShellCompDirectiveFilterFileExt, default);
             }
         }
 
-        {
-            var (subDir, present) = flag.Annotations[BashCompSubdirsInDir, ꟷ]; if (present) {
-                if (len(subDir) == 1) {
-                    return (finalCmd, subDir, ShellCompDirectiveFilterDirs, default);
-                }
-                return (finalCmd, slice<Completion>([]), ShellCompDirectiveFilterDirs, default);
+        if (flag.Annotations[BashCompSubdirsInDir, ꟷ] is (var subDir, true)) {
+            if (len(subDir) == 1) {
+                return (finalCmd, subDir, ShellCompDirectiveFilterDirs, default);
             }
+            return (finalCmd, slice<Completion>([]), ShellCompDirectiveFilterDirs, default);
         }
     }
 
@@ -363,7 +351,7 @@ internal static (ж<Command>, slice<Completion>, ShellCompDirective, error) getC
             }
 
             if (len(finalArgs) == 0 && !foundLocalNonPersistentFlag) {
-                foreach (var (_, subCmd) in finalCmd.Commands()) {
+                foreach (var (_, subCmd) in range(finalCmd.Commands())) {
                     if (subCmd.IsAvailableCommand() || subCmd == finalCmd.helpCommand) {
                         if (strings.HasPrefix(subCmd.Name(), toComplete)) {
                             completions = append(completions, CompletionWithDesc(subCmd.Name(), subCmd.Short));
@@ -377,7 +365,7 @@ internal static (ж<Command>, slice<Completion>, ShellCompDirective, error) getC
 
             if (len(finalCmd.ValidArgs) > 0) {
                 if (len(finalArgs) == 0) {
-                    foreach (var (_, validArg) in finalCmd.ValidArgs) {
+                    foreach (var (_, validArg) in range(finalCmd.ValidArgs)) {
                         if (strings.HasPrefix(validArg, toComplete)) {
                             completions = append(completions, validArg);
                         }
@@ -385,7 +373,7 @@ internal static (ж<Command>, slice<Completion>, ShellCompDirective, error) getC
                     directive = ShellCompDirectiveNoFileComp;
 
                     if (len(completions) == 0) {
-                        foreach (var (_, argAlias) in finalCmd.ArgAliases) {
+                        foreach (var (_, argAlias) in range(finalCmd.ArgAliases)) {
                             if (strings.HasPrefix(argAlias, toComplete)) {
                                 completions = append(completions, argAlias);
                             }
@@ -418,22 +406,18 @@ internal static (ж<Command>, slice<Completion>, ShellCompDirective, error) getC
 internal static bool helpOrVersionFlagPresent(ж<Command> Ꮡcmd) {
     ref var cmd = ref Ꮡcmd.DerefOrNull();
 
-    {
-        var versionFlag = cmd.Flags().Lookup("version"); if (versionFlag != nil && len(versionFlag.Annotations[FlagSetByCobraAnnotation]) > 0 && versionFlag.Changed) {
-            return true;
-        }
+    var versionFlag = cmd.Flags().Lookup("version"); if (versionFlag != nil && len(versionFlag.Annotations[FlagSetByCobraAnnotation]) > 0 && versionFlag.Changed) {
+        return true;
     }
-    {
-        var helpFlag = cmd.Flags().Lookup(helpFlagName); if (helpFlag != nil && len(helpFlag.Annotations[FlagSetByCobraAnnotation]) > 0 && helpFlag.Changed) {
-            return true;
-        }
+    var helpFlag = cmd.Flags().Lookup(helpFlagName); if (helpFlag != nil && len(helpFlag.Annotations[FlagSetByCobraAnnotation]) > 0 && helpFlag.Changed) {
+        return true;
     }
     return false;
 }
 
 internal static slice<Completion> getFlagNameCompletions(ref pflag.Flag flag, @string toComplete) {
     if (nonCompletableFlag(ref flag)) {
-        return slice<Completion>([]);
+        return [];
     }
 
     slice<Completion> completions = default;
@@ -454,11 +438,9 @@ internal static slice<Completion> completeRequireFlags(ж<Command> finalCmd, @st
     ref var completions = ref heap<slice<Completion>>(out var Ꮡcompletions);
 
     void doCompleteRequiredFlags(ж<pflag.Flag> flag) {
-        {
-            var (_, present) = flag.Annotations[BashCompOneRequiredFlag, ꟷ]; if (present) {
-                if (!flag.Changed) {
-                    Ꮡcompletions.ValueSlot = appendꓸꓸꓸ(Ꮡcompletions.ValueSlot, getFlagNameCompletions(ref (flag).DerefOrNull(), toComplete));
-                }
+        var (_, present) = flag.Annotations[BashCompOneRequiredFlag, ꟷ]; if (present) {
+            if (!flag.Changed) {
+                Ꮡcompletions.ValueSlot = appendꓸꓸꓸ(Ꮡcompletions.ValueSlot, getFlagNameCompletions(ref (flag).DerefOrNull(), toComplete));
             }
         }
     }
@@ -488,18 +470,16 @@ internal static (ж<pflag.Flag>, slice<@string>, @string, error) checkIfFlagComp
     @string orgLastArg = lastArg;
 
     if (len(lastArg) > 0 && lastArg[0] == '-') {
-        {
-            nint index = strings.Index(lastArg, "="); if (index >= 0) {
-                if (strings.HasPrefix(lastArg.slice(0, index), "--")) {
-                    flagName = lastArg.slice(2, index);
-                } else {
-                    flagName = lastArg.slice(index - 1, index);
-                }
-                lastArg = lastArg.slice(index + 1);
-                flagWithEqual = true;
+        nint index = strings.Index(lastArg, "="); if (index >= 0) {
+            if (strings.HasPrefix(lastArg.slice(0, index), "--")) {
+                flagName = lastArg.slice(2, index);
             } else {
-                return (default, args, lastArg, default);
+                flagName = lastArg.slice(index - 1, index);
             }
+            lastArg = lastArg.slice(index + 1);
+            flagWithEqual = true;
+        } else {
+            return (default, args, lastArg, default);
         }
     }
 
@@ -507,15 +487,13 @@ internal static (ж<pflag.Flag>, slice<@string>, @string, error) checkIfFlagComp
         if (len(args) > 0) {
             @string prevArg = args[len(args) - 1];
             if (isFlagArg(prevArg)) {
-                {
-                    nint index = strings.Index(prevArg, "="); if (index < 0) {
-                        if (strings.HasPrefix(prevArg, "--")) {
-                            flagName = prevArg[2..];
-                        } else {
-                            flagName = prevArg.slice(len(prevArg) - 1);
-                        }
-                        trimmedArgs = args.slice(0, len(args) - 1);
+                nint index = strings.Index(prevArg, "="); if (index < 0) {
+                    if (strings.HasPrefix(prevArg, "--")) {
+                        flagName = prevArg[2..];
+                    } else {
+                        flagName = prevArg.slice(len(prevArg) - 1);
                     }
+                    trimmedArgs = args.slice(0, len(args) - 1);
                 }
             }
         }
@@ -548,7 +526,7 @@ public static void InitDefaultCompletionCmd(this ж<Command> Ꮡc, params ꓸꓸ
         return;
     }
 
-    foreach (var (_, cmd) in c.commands) {
+    foreach (var (_, cmd) in range(c.commands)) {
         if (cmd.Name() == compCmdName || cmd.HasAlias(compCmdName)) {
             return;
         }
@@ -557,7 +535,7 @@ public static void InitDefaultCompletionCmd(this ж<Command> Ꮡc, params ꓸꓸ
     var haveNoDescFlag = !c.CompletionOptions.DisableNoDescFlag && !c.CompletionOptions.DisableDescriptions;
 
     var hasSubCommands = false;
-    foreach (var (_, cmd) in c.commands) {
+    foreach (var (_, cmd) in range(c.commands)) {
         if (cmd.Name() != ShellCompRequestCmd && cmd.Name() != helpCommandName) {
             hasSubCommands = true;
             break;
@@ -730,18 +708,14 @@ internal static ж<pflag.Flag> findFlag(ж<Command> Ꮡcmd, @string name) {
 
     var flagSet = cmd.Flags();
     if (len(name) == 1) {
-        {
-            var @short = flagSet.ShorthandLookup(name); if (@short != nil) {
+        var @short = flagSet.ShorthandLookup(name); if (@short != nil) {
+            name = @short.Name;
+        } else {
+            var set = Ꮡcmd.InheritedFlags();
+            @short = set.ShorthandLookup(name); if (@short != nil) {
                 name = @short.Name;
             } else {
-                var set = Ꮡcmd.InheritedFlags();
-                {
-                    @short = set.ShorthandLookup(name); if (@short != nil) {
-                        name = @short.Name;
-                    } else {
-                        return default;
-                    }
-                }
+                return default;
             }
         }
     }

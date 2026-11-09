@@ -81,10 +81,8 @@ public static error GenMarkdownCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Fun
         fmt.Fprintf(new bytes_BufferжWriter(buf), "```\n%s\n```\n\n"u8, cmd.Example);
     }
 
-    {
-        var errΔ1 = printOptions(buf, Ꮡcmd, name); if (errΔ1 != nil) {
-            return errΔ1;
-        }
+    var errΔ1 = printOptions(buf, Ꮡcmd, name); if (errΔ1 != nil) {
+        return errΔ1;
     }
     if (hasSeeAlso(Ꮡcmd)) {
         buf.WriteString("### SEE ALSO\n\n");
@@ -104,7 +102,7 @@ public static error GenMarkdownCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Fun
         var children = cmd.Commands();
         sort.Sort((byName)children);
 
-        foreach (var (_, child) in children) {
+        foreach (var (_, child) in range(children)) {
             if (!child.IsAvailableCommand() || child.IsAdditionalHelpTopicCommand()) {
                 continue;
             }
@@ -133,14 +131,12 @@ public static error GenMarkdownTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir,
     try {
         ref var cmd = ref Ꮡcmd.DerefOrNull();
 
-        foreach (var (_, c) in cmd.Commands()) {
+        foreach (var (_, c) in range(cmd.Commands())) {
             if (!c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand()) {
                 continue;
             }
-            {
-                var errΔ1 = GenMarkdownTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
-                    return errΔ1;
-                }
+            var errΔ1 = GenMarkdownTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
+                return errΔ1;
             }
         }
 
@@ -153,15 +149,11 @@ public static error GenMarkdownTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir,
         var fʗ1 = f;
         defer(() => fʗ1.Close(), ref ᒐ);
 
-        {
-            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
-                return errΔ2;
-            }
+        var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
+            return errΔ2;
         }
-        {
-            var errΔ3 = GenMarkdownCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
-                return errΔ3;
-            }
+        var errΔ3 = GenMarkdownCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
+            return errΔ3;
         }
         return default;
     }

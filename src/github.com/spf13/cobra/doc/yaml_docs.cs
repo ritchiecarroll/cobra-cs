@@ -58,14 +58,12 @@ public static error GenYamlTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
     try {
         ref var cmd = ref Ꮡcmd.DerefOrNull();
 
-        foreach (var (_, c) in cmd.Commands()) {
+        foreach (var (_, c) in range(cmd.Commands())) {
             if (!c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand()) {
                 continue;
             }
-            {
-                var errΔ1 = GenYamlTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
-                    return errΔ1;
-                }
+            var errΔ1 = GenYamlTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
+                return errΔ1;
             }
         }
 
@@ -78,15 +76,11 @@ public static error GenYamlTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
         var fʗ1 = f;
         defer(() => fʗ1.Close(), ref ᒐ);
 
-        {
-            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
-                return errΔ2;
-            }
+        var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
+            return errΔ2;
         }
-        {
-            var errΔ3 = GenYamlCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
-                return errΔ3;
-            }
+        var errΔ3 = GenYamlCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
+            return errΔ3;
         }
         return default;
     }
@@ -135,7 +129,7 @@ public static error GenYamlCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
         }
         var children = cmd.Commands();
         sort.Sort((byName)children);
-        foreach (var (_, child) in children) {
+        foreach (var (_, child) in range(children)) {
             if (!child.IsAvailableCommand() || child.IsAdditionalHelpTopicCommand()) {
                 continue;
             }
@@ -150,10 +144,8 @@ public static error GenYamlCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
         os.Exit(1);
     }
 
-    {
-        var (_, errΔ1) = w.Write(final); if (errΔ1 != nil) {
-            return errΔ1;
-        }
+    var (_, errΔ1) = w.Write(final); if (errΔ1 != nil) {
+        return errΔ1;
     }
     return default;
 }

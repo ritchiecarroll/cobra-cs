@@ -451,7 +451,7 @@ internal static void writeCommands(io.StringWriter buf, ж<Command> Ꮡcmd) {
     ref var cmd = ref Ꮡcmd.DerefOrNull();
 
     WriteStringAndCheck(buf, "    commands=()\n");
-    foreach (var (_, c) in cmd.Commands()) {
+    foreach (var (_, c) in range(cmd.Commands())) {
         if (!c.IsAvailableCommand() && c != cmd.helpCommand) {
             continue;
         }
@@ -615,18 +615,16 @@ internal static void writeRequiredFlag(io.StringWriter buf, ж<Command> cmd) {
         if (nonCompletableFlag(ref (flag).DerefOrNull())) {
             return;
         }
-        {
-            var (_, ok) = flag.Annotations[BashCompOneRequiredFlag, ꟷ]; if (ok) {
-                @string format = "    must_have_one_flag+=(\"--%s";
-                if ((~flag).Value.Type() != "bool"u8) {
-                    format += "="u8;
-                }
-                format += cbn;
-                WriteStringAndCheck(buf, fmt.Sprintf(format, flag.Name));
+        var (_, ok) = flag.Annotations[BashCompOneRequiredFlag, ꟷ]; if (ok) {
+            @string format = "    must_have_one_flag+=(\"--%s";
+            if ((~flag).Value.Type() != "bool"u8) {
+                format += "="u8;
+            }
+            format += cbn;
+            WriteStringAndCheck(buf, fmt.Sprintf(format, flag.Name));
 
-                if (len(flag.Shorthand) > 0) {
-                    WriteStringAndCheck(buf, fmt.Sprintf("    must_have_one_flag+=(\"-%s" + cbn, flag.Shorthand));
-                }
+            if (len(flag.Shorthand) > 0) {
+                WriteStringAndCheck(buf, fmt.Sprintf("    must_have_one_flag+=(\"-%s" + cbn, flag.Shorthand));
             }
         }
     });
@@ -635,7 +633,7 @@ internal static void writeRequiredFlag(io.StringWriter buf, ж<Command> cmd) {
 internal static void writeRequiredNouns(io.StringWriter buf, ref Command cmd) {
     WriteStringAndCheck(buf, "    must_have_one_noun=()\n");
     sort.Strings(cmd.ValidArgs);
-    foreach (var (_, vᴛ1) in cmd.ValidArgs) {
+    foreach (var (_, vᴛ1) in range(cmd.ValidArgs)) {
         var value = vᴛ1;
 
         value = strings.SplitN(value, "\t", 2)[0];
@@ -656,18 +654,17 @@ internal static void writeCmdAliases(io.StringWriter buf, ж<Command> Ꮡcmd) {
     sort.Strings(cmd.Aliases);
 
     WriteStringAndCheck(buf, fmt.Sprint(@"    if [[ -z ""${BASH_VERSION:-}"" || ""${BASH_VERSINFO[0]:-}"" -gt 3 ]]; then", "\n"));
-    foreach (var (_, value) in cmd.Aliases) {
+    foreach (var (_, value) in range(cmd.Aliases)) {
         WriteStringAndCheck(buf, fmt.Sprintf("        command_aliases+=(%q)\n"u8, value));
         WriteStringAndCheck(buf, fmt.Sprintf("        aliashash[%q]=%q\n"u8, value, cmd.Name()));
     }
     WriteStringAndCheck(buf, @"    fi");
     WriteStringAndCheck(buf, "\n");
 }
-
 internal static void writeArgAliases(io.StringWriter buf, ref Command cmd) {
     WriteStringAndCheck(buf, "    noun_aliases=()\n");
     sort.Strings(cmd.ArgAliases);
-    foreach (var (_, value) in cmd.ArgAliases) {
+    foreach (var (_, value) in range(cmd.ArgAliases)) {
         WriteStringAndCheck(buf, fmt.Sprintf("    noun_aliases+=(%q)\n"u8, value));
     }
 }
@@ -675,7 +672,7 @@ internal static void writeArgAliases(io.StringWriter buf, ref Command cmd) {
 internal static void gen(io.StringWriter buf, ж<Command> Ꮡcmd) {
     ref var cmd = ref Ꮡcmd.DerefOrNull();
 
-    foreach (var (_, c) in cmd.Commands()) {
+    foreach (var (_, c) in range(cmd.Commands())) {
         if (!c.IsAvailableCommand() && c != cmd.helpCommand) {
             continue;
         }

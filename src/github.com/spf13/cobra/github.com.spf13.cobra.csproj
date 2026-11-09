@@ -34,7 +34,7 @@
     <InterceptorsNamespaces>$(InterceptorsNamespaces);go2cs.Interceptors</InterceptorsNamespaces>
     <WarningsAsErrors>$(WarningsAsErrors);CS8032;CS8034;CS8784;CS8785;CS9057</WarningsAsErrors>
     <!-- What this package's conversion is a function of; nugetgo-pack.ps1 checks its validation proof names the same -->
-    <GoInputDigest>sha256-c8b47159914ba4eaf4e962cc6090feae243eaa993125009de91a86947915239f</GoInputDigest>
+    <GoInputDigest>sha256-e3f8849dfa1871b8974a6821eaf294684101999fc593fb6e76ba907a09fe06ad</GoInputDigest>
   </PropertyGroup>
 
   <!-- Same-package Go tests run in a separate assembly but retain package-private access. -->
@@ -70,6 +70,8 @@
     <TrimMode Condition="'$(TrimMode)'==''">partial</TrimMode>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Per-assembly ReadyToRun for a single file: the SDK's composite default, compressed, costs seconds of start-up. https://github.com/ritchiecarroll/go2cs/blob/master/docs/Tuning.md -->
+    <PublishReadyToRunComposite Condition="'$(PublishReadyToRunComposite)'==''">false</PublishReadyToRunComposite>
     <!-- Opt-in for Ubuntu's packaged .NET 10, where on-stack replacement can end a program early (0x80131506 or a silent
          exit 0); costs about 90 ms of startup; becomes the default if a converted program reproduces it. https://github.com/ritchiecarroll/go2cs/blob/master/docs/KnownIssues.md -->
     <!-- <TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops> -->

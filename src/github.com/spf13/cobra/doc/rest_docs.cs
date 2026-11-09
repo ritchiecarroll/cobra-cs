@@ -94,10 +94,8 @@ public static error GenReSTCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
         fmt.Fprintf(new bytes_BufferжWriter(buf), "::\n\n%s\n\n"u8, indentString(cmd.Example, "  "));
     }
 
-    {
-        var errΔ1 = printOptionsReST(buf, Ꮡcmd, name); if (errΔ1 != nil) {
-            return errΔ1;
-        }
+    var errΔ1 = printOptionsReST(buf, Ꮡcmd, name); if (errΔ1 != nil) {
+        return errΔ1;
     }
     if (hasSeeAlso(Ꮡcmd)) {
         buf.WriteString("SEE ALSO\n");
@@ -117,7 +115,7 @@ public static error GenReSTCustom(ж<cobra.Command> Ꮡcmd, io.Writer w, Func<@s
         var children = cmd.Commands();
         sort.Sort((byName)children);
 
-        foreach (var (_, child) in children) {
+        foreach (var (_, child) in range(children)) {
             if (!child.IsAvailableCommand() || child.IsAdditionalHelpTopicCommand()) {
                 continue;
             }
@@ -144,14 +142,12 @@ public static error GenReSTTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
     try {
         ref var cmd = ref Ꮡcmd.DerefOrNull();
 
-        foreach (var (_, c) in cmd.Commands()) {
+        foreach (var (_, c) in range(cmd.Commands())) {
             if (!c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand()) {
                 continue;
             }
-            {
-                var errΔ1 = GenReSTTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
-                    return errΔ1;
-                }
+            var errΔ1 = GenReSTTreeCustom(c, dir, filePrepender, linkHandler); if (errΔ1 != nil) {
+                return errΔ1;
             }
         }
 
@@ -164,15 +160,11 @@ public static error GenReSTTreeCustom(ж<cobra.Command> Ꮡcmd, @string dir, Fun
         var fʗ1 = f;
         defer(() => fʗ1.Close(), ref ᒐ);
 
-        {
-            var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
-                return errΔ2;
-            }
+        var (_, errΔ2) = io.WriteString(new os.FileжWriter(f), filePrepender(filename)); if (errΔ2 != nil) {
+            return errΔ2;
         }
-        {
-            var errΔ3 = GenReSTCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
-                return errΔ3;
-            }
+        var errΔ3 = GenReSTCustom(Ꮡcmd, new os.FileжWriter(f), linkHandler); if (errΔ3 != nil) {
+            return errΔ3;
         }
         return default;
     }
@@ -185,7 +177,7 @@ internal static @string indentString(@string s, @string p) {
     var b = slice<byte>(s);
     var prefix = slice<byte>(p);
     var bol = true;
-    foreach (var (_, c) in b) {
+    foreach (var (_, c) in range(b)) {
         if (bol && c != '\n') {
             res = appendꓸꓸꓸ(res, prefix);
         }
